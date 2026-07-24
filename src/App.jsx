@@ -13,7 +13,9 @@ import Wishlist from "./pages/wishlist";
 import Downloads from "./pages/downloads";
 import AdminRoute from "./routes/adminRoute"; // Added AdminRoute import
 import { Toaster } from "react-hot-toast";
+import ForgotPassword from "./pages/resetpassword";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Orders from "./pages/orders";
 
 export default function App() {
   return (
@@ -34,8 +36,10 @@ export default function App() {
           />
 
           <Route path="/downloads" element={<Downloads />} />
+          <Route path="/reset-password" element={<ForgotPassword/>}/>
           <Route path="/shop" element={<Shop />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/orders" element={<Orders />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/checkout" element={<Checkout />} />

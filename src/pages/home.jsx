@@ -65,6 +65,11 @@ import {
   Mail,
   MapPin,
   Phone,
+  Cookie,
+  ThumbsUp,
+  ThumbsDown,
+  Crown,
+  Rocket,
 } from "lucide-react";
 
 // ==========================================
@@ -132,6 +137,31 @@ export default function Home() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [expandedFaq, setExpandedFaq] = useState(null);
 
+  // Cookie Consent State
+  const [showCookieModal, setShowCookieModal] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [cookiesAccepted, setCookiesAccepted] = useState(false);
+
+  // Check if user has already accepted cookies
+  useEffect(() => {
+    const cookieConsent = localStorage.getItem("blackhub_cookies");
+    if (cookieConsent === "accepted") {
+      setCookiesAccepted(true);
+      // Show login prompt after cookie acceptance
+      const loginPromptShown = localStorage.getItem("blackhub_login_prompt");
+      if (!loginPromptShown) {
+        setTimeout(() => {
+          setShowLoginPrompt(true);
+        }, 3000);
+      }
+    } else if (!cookieConsent) {
+      // Show cookie modal after 2 seconds
+      setTimeout(() => {
+        setShowCookieModal(true);
+      }, 2000);
+    }
+  }, []);
+
   // Keyboard shortcut for search
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -163,7 +193,33 @@ export default function Home() {
     setSearchOpen(false);
   };
 
-  // Animation variants - optimized for performance
+  // Cookie handlers
+  const handleAcceptCookies = () => {
+    localStorage.setItem("blackhub_cookies", "accepted");
+    setCookiesAccepted(true);
+    setShowCookieModal(false);
+    // Show login prompt after acceptance
+    setTimeout(() => {
+      setShowLoginPrompt(true);
+    }, 1500);
+  };
+
+  const handleRejectCookies = () => {
+    localStorage.setItem("blackhub_cookies", "rejected");
+    setShowCookieModal(false);
+  };
+
+  const handleCloseLoginPrompt = () => {
+    setShowLoginPrompt(false);
+    localStorage.setItem("blackhub_login_prompt", "dismissed");
+  };
+
+  const handleLoginNow = () => {
+    setShowLoginPrompt(false);
+    navigate("/login");
+  };
+
+  // Animation variants
   const itemVariants = {
     hidden: { y: 15, opacity: 0 },
     visible: {
@@ -312,6 +368,179 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen bg-[#050507] text-white font-sans selection:bg-amber-400 selection:text-black overflow-x-hidden">
+      {/* ========================================== */}
+      {/* COOKIE CONSENT MODAL                       */}
+      {/* ========================================== */}
+      <AnimatePresence>
+        {showCookieModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="bg-zinc-950/95 border border-amber-500/30 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl shadow-amber-500/10 relative overflow-hidden"
+            >
+              {/* Decorative Top Accent */}
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent" />
+              <div className="absolute -top-20 -right-20 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl" />
+              <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-yellow-500/10 rounded-full blur-3xl" />
+
+              <div className="relative z-10 text-center space-y-5">
+                {/* Cookie Icon */}
+                <motion.div
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                  className="inline-flex p-3 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-amber-400"
+                >
+                  <Cookie className="w-10 h-10" />
+                </motion.div>
+
+                <div>
+                  <h3 className="text-xl font-black text-white">
+                    🍪 Cookie Consent
+                  </h3>
+                  <p className="text-xs text-zinc-400 font-mono mt-1 leading-relaxed">
+                    We use cookies to enhance your browsing experience, analyze
+                    site traffic, and personalize content. By clicking "Accept",
+                    you consent to our use of cookies.
+                  </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                  <button
+                    onClick={handleAcceptCookies}
+                    className="flex-1 px-6 py-3 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-black font-black rounded-xl text-xs uppercase tracking-wider transition shadow-lg shadow-amber-400/20 flex items-center justify-center gap-2"
+                  >
+                    <ThumbsUp className="w-4 h-4" />
+                    Accept All
+                  </button>
+                  <button
+                    onClick={handleRejectCookies}
+                    className="flex-1 px-6 py-3 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold rounded-xl text-xs uppercase tracking-wider transition border border-zinc-800 flex items-center justify-center gap-2"
+                  >
+                    <ThumbsDown className="w-4 h-4" />
+                    Reject
+                  </button>
+                </div>
+
+                <p className="text-[8px] text-zinc-500 font-mono">
+                  You can change your preferences at any time in your account
+                  settings.
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ========================================== */}
+      {/* LOGIN PROMPT MODAL                         */}
+      {/* ========================================== */}
+      <AnimatePresence>
+        {showLoginPrompt && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="bg-zinc-950/95 border border-amber-500/30 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl shadow-amber-500/10 relative overflow-hidden"
+            >
+              {/* Decorative Top Accent */}
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent" />
+              <div className="absolute -top-20 -right-20 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl" />
+              <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-yellow-500/10 rounded-full blur-3xl" />
+
+              <div className="relative z-10 text-center space-y-5">
+                {/* Login Prompt Icon */}
+                <motion.div
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 15,
+                    delay: 0.2,
+                  }}
+                  className="inline-flex p-3 bg-gradient-to-br from-amber-400 to-yellow-400 rounded-2xl shadow-lg shadow-amber-400/20"
+                >
+                  <Crown className="w-10 h-10 text-black" />
+                </motion.div>
+
+                <div>
+                  <h3 className="text-xl font-black text-white">
+                    🚀 Unlock Premium Experience
+                  </h3>
+                  <p className="text-xs text-zinc-400 font-mono mt-1 leading-relaxed">
+                    Sign in to access exclusive features, manage your digital
+                    assets, track orders, and enjoy faster checkout.
+                  </p>
+                </div>
+
+                {/* Features List */}
+                <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4 space-y-2 text-left">
+                  <div className="flex items-center gap-2 text-xs text-zinc-300">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                    <span>Access your digital vault</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-zinc-300">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                    <span>Track orders in real-time</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-zinc-300">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                    <span>Save items to wishlist</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-zinc-300">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                    <span>Exclusive member discounts</span>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                  <button
+                    onClick={handleLoginNow}
+                    className="flex-1 px-6 py-3 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-black font-black rounded-xl text-xs uppercase tracking-wider transition shadow-lg shadow-amber-400/20 flex items-center justify-center gap-2"
+                  >
+                    <LogIn className="w-4 h-4" />
+                    Login Now
+                  </button>
+                  <button
+                    onClick={handleCloseLoginPrompt}
+                    className="flex-1 px-6 py-3 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold rounded-xl text-xs uppercase tracking-wider transition border border-zinc-800"
+                  >
+                    Maybe Later
+                  </button>
+                </div>
+
+                <p className="text-[8px] text-zinc-500 font-mono">
+                  Don't have an account?{" "}
+                  <button
+                    onClick={() => {
+                      setShowLoginPrompt(false);
+                      navigate("/register");
+                    }}
+                    className="text-amber-400 hover:text-amber-300 transition font-bold"
+                  >
+                    Register here
+                  </button>
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Aurora Animated Background - Optimized */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-amber-500/15 via-yellow-500/8 to-transparent blur-[120px] rounded-full" />
