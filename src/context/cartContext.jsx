@@ -52,7 +52,7 @@ export function CartProvider({ children }) {
       alert("Please login first.");
       return;
     }
-
+    console.log(auth.currentUser);
     const cartRef = doc(db, "users", user.uid, "cart", product.id);
 
     const existing = await getDoc(cartRef);

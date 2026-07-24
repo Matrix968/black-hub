@@ -4,15 +4,31 @@ import { db } from "../firebase/firebase";
 import { useCart } from "../context/cartContext";
 import { useWishlist } from "../context/wishlistContext";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
+import {
+  Search,
+  ShoppingCart,
+  Heart,
+  Star,
+  Sparkles,
+  PackageOpen,
+  Filter,
+  Grid3x3,
+  LayoutGrid,
+  ArrowUpDown,
+  ChevronDown,
+} from "lucide-react";
 
 export default function Shop() {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState("grid");
+  const [sortBy, setSortBy] = useState("popular");
 
   const { addToCart, cart } = useCart();
-  const { addWishlist } = useWishlist();
+  const { wishlist, addWishlist, removeWishlist } = useWishlist();
 
   useEffect(() => {
     loadProducts();
@@ -49,11 +65,63 @@ export default function Shop() {
 
       setProducts(data);
     } catch (error) {
-      console.error("Failed to sync system product directory:", error);
+      console.error("Failed to load products:", error);
+      toast.error("Failed to load store catalog.");
     } finally {
       setLoading(false);
     }
   }
+
+  // Safe handler for adding to cart with debug checks
+  const handleAddToCart = (product) => {
+    try {
+      const isInCart = cart.some((item) => item.id === product.id);
+
+      if (isInCart) {
+        toast("Item is already in your cart", { icon: "🛒" });
+        return;
+      }
+
+      addToCart(product);
+      toast.success(`${product.title} added to cart!`);
+  
+    } catch (err) {
+      console.error("Cart action error:", err);
+      toast.error("Failed to add product to cart");
+    }
+  };
+
+  // Safe handler for toggling wishlist items
+  const handleWishlistToggle = (product) => {
+    try {
+      const isWishlisted = wishlist?.some((item) => item.id === product.id);
+
+      if (isWishlisted) {
+        if (removeWishlist) {
+          removeWishlist(product.id);
+        } else {
+          addWishlist(product);
+        }
+        toast.error(`Removed ${product.title} from wishlist`, { icon: "💔" });
+      } else {
+        addWishlist(product);
+        toast.success(`Saved ${product.title} to wishlist!`, { icon: "❤️" });
+      }
+    } catch (err) {
+      console.error("Wishlist action error:", err);
+      toast.error("Failed to update wishlist");
+    }
+  };
+
+  const categories = [
+    "All",
+    "Netflix",
+    "Spotify",
+    "Canva",
+    "Website",
+    "Design",
+    "Other",
+  ];
 
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.title
@@ -66,167 +134,286 @@ export default function Shop() {
   });
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans antialiased">
-      {/* Premium Header Architecture */}
-      <header className="bg-gray-950 border-b border-gray-900 px-6 lg:px-12 py-5 flex justify-between items-center">
-        <div className="flex items-center gap-2.5">
-          <div className="w-2.5 h-2.5 bg-yellow-400 rounded-full animate-pulse" />
-          <h1 className="text-xl font-black tracking-widest text-white uppercase">
-            BLACK HUB
-          </h1>
-        </div>
-
-        <Link
-          to="/cart"
-          className="bg-yellow-400 hover:bg-yellow-500 text-black px-5 py-2 rounded-xl font-bold text-xs tracking-wider uppercase transition duration-150 relative"
-        >
-          Cart Allocation ({cart.length})
+    <div className="min-h-screen bg-[#050507] text-white font-sans antialiased selection:bg-yellow-400 selection:text-black">
+      {/* ========================================== */}
+      {/* PREMIUM NAVIGATION HEADER                  */}
+      {/* ========================================== */}
+      <header className="sticky top-0 z-50 bg-[#050507]/90 backdrop-blur-2xl border-b border-amber-500/20 px-4 sm:px-6 lg:px-12 py-3 sm:py-4 flex justify-between items-center">
+        <Link to="/" className="flex items-center gap-2 group">
+          <div className="w-2.5 h-2.5 bg-gradient-to-r from-amber-400 to-yellow-400 rounded-full group-hover:scale-125 transition shadow-lg shadow-amber-400/30" />
+          <span className="text-lg font-black tracking-wider text-white uppercase bg-gradient-to-r from-white to-amber-200 bg-clip-text text-transparent">
+            Black Hub
+          </span>
         </Link>
+
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Link
+            to="/wishlist"
+            className="bg-zinc-900/80 hover:bg-zinc-800 text-gray-300 border border-zinc-800 hover:border-amber-500/30 px-3 sm:px-4 py-2 rounded-xl font-bold text-xs tracking-wide uppercase transition flex items-center gap-2"
+          >
+            <Heart className="w-3.5 h-3.5 text-rose-500" />
+            <span className="hidden sm:inline">Wishlist</span>
+          </Link>
+
+          <Link
+            to="/cart"
+            className="bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-black px-3 sm:px-4 py-2 rounded-xl font-bold text-xs tracking-wide uppercase transition flex items-center gap-2 shadow-lg shadow-amber-400/20"
+          >
+            <ShoppingCart className="w-3.5 h-3.5" />
+            <span>Cart ({cart.length})</span>
+          </Link>
+        </div>
       </header>
 
-      {/* Main Container Workspace */}
-      <main className="max-w-7xl mx-auto px-6 lg:px-12 py-10">
-        {/* Title Meta block */}
-        <div className="mb-10">
-          <h2 className="text-3xl font-extrabold tracking-tight">
-            Digital Terminal Directory
-          </h2>
-          <p className="text-xs text-gray-500 mt-1">
-            Provision verified elite software matrices, nodes, and premium tier
-            accounts.
-          </p>
+      {/* ========================================== */}
+      {/* MAIN CONTAINER                            */}
+      {/* ========================================== */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-6 sm:py-10 space-y-6 sm:space-y-8">
+        {/* ========================================== */}
+        {/* HERO BANNER                               */}
+        {/* ========================================== */}
+        <div className="relative bg-gradient-to-r from-zinc-900/80 via-zinc-900/40 to-zinc-900/20 border border-amber-500/20 rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-10 overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-2xl shadow-amber-500/5">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-yellow-500/5 rounded-full blur-3xl" />
+
+          <div className="space-y-2 max-w-xl relative z-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[11px] font-mono">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Verified Digital Storefront</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white">
+              Explore Digital Assets & Services
+            </h1>
+            <p className="text-sm text-gray-400 max-w-lg">
+              Browse verified software accounts, design assets, and premium web
+              tools instantly delivered to your dashboard.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 relative z-10 w-full md:w-auto">
+            <div className="flex items-center gap-2 bg-zinc-900/80 border border-zinc-800 rounded-xl px-3 py-2">
+              <span className="text-xs text-zinc-400 font-bold">Products</span>
+              <span className="text-xs font-black text-amber-400">
+                {filteredProducts.length}
+              </span>
+            </div>
+          </div>
         </div>
 
-        {/* Tactical Search & Filter Matrix */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-10">
-          <input
-            type="text"
-            placeholder="Search verified parameters..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 bg-gray-950 border border-gray-900 focus:border-gray-800 p-4 rounded-xl text-sm focus:outline-none transition duration-150 text-white placeholder-gray-600"
-          />
+        {/* ========================================== */}
+        {/* SEARCH & FILTERS                          */}
+        {/* ========================================== */}
+        <div className="space-y-4">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+            <input
+              type="text"
+              placeholder="Search products by title..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full bg-zinc-950/80 border border-zinc-800 focus:border-amber-500/50 pl-11 pr-4 py-3.5 rounded-2xl text-sm focus:outline-none transition text-white placeholder-gray-500 shadow-inner focus:shadow-amber-500/5"
+            />
+          </div>
 
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="bg-gray-950 border border-gray-900 focus:border-gray-800 p-4 rounded-xl text-sm focus:outline-none transition duration-150 text-gray-400 font-mono cursor-pointer min-w-[180px]"
-          >
-            <option value="All">// All Repositories</option>
-            <option value="Netflix">Netflix Data</option>
-            <option value="Spotify">Spotify Data</option>
-            <option value="Canva">Canva Access</option>
-            <option value="Website">Web Infrastructure</option>
-            <option value="Design">Assets & Design</option>
-            <option value="Other">Unmapped Assets</option>
-          </select>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 w-full sm:w-auto scrollbar-none">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setCategory(cat)}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold tracking-wide uppercase transition shrink-0 cursor-pointer whitespace-nowrap ${
+                    category === cat
+                      ? "bg-gradient-to-r from-amber-400 to-yellow-400 text-black shadow-lg shadow-amber-400/20"
+                      : "bg-zinc-950/80 text-gray-400 border border-zinc-800 hover:border-amber-500/30 hover:text-white"
+                  }`}
+                >
+                  {cat === "All" ? "All Categories" : cat}
+                </button>
+              ))}
+            </div>
+
+            {/* View Toggle */}
+            <div className="flex items-center gap-2 ml-auto">
+              <button
+                onClick={() => setViewMode("grid")}
+                className={`p-2 rounded-xl transition ${
+                  viewMode === "grid"
+                    ? "bg-amber-500/10 text-amber-400 border border-amber-500/30"
+                    : "bg-zinc-950/80 text-zinc-500 border border-zinc-800 hover:text-white"
+                }`}
+              >
+                <Grid3x3 className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode("list")}
+                className={`p-2 rounded-xl transition ${
+                  viewMode === "list"
+                    ? "bg-amber-500/10 text-amber-400 border border-amber-500/30"
+                    : "bg-zinc-950/80 text-zinc-500 border border-zinc-800 hover:text-white"
+                }`}
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* Dynamic Products Layer */}
+        {/* ========================================== */}
+        {/* PRODUCTS GRID LAYER                       */}
+        {/* ========================================== */}
         {loading ? (
-          /* Custom Matrix Skeleton Loader Engine */
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             {[...Array(8)].map((_, idx) => (
               <div
                 key={idx}
-                className="bg-gray-900/20 border border-gray-900 rounded-2xl overflow-hidden p-4 space-y-4 animate-pulse"
+                className="bg-zinc-900/20 border border-zinc-800/60 rounded-2xl sm:rounded-3xl overflow-hidden p-4 space-y-4 animate-pulse"
               >
-                <div className="w-full h-44 bg-gray-950 rounded-xl" />
-                <div className="h-4 bg-gray-800 rounded w-3/4" />
-                <div className="h-3 bg-gray-900 rounded w-1/2" />
-                <div className="h-6 bg-gray-800 rounded w-1/3 pt-2" />
+                <div className="w-full h-44 bg-zinc-900 rounded-2xl" />
+                <div className="h-4 bg-zinc-800 rounded w-3/4" />
+                <div className="h-3 bg-zinc-900 rounded w-1/2" />
+                <div className="h-6 bg-zinc-800 rounded w-1/3 pt-2" />
                 <div className="space-y-2 pt-2">
-                  <div className="h-9 bg-gray-900 rounded-xl w-full" />
-                  <div className="h-9 bg-gray-900 rounded-xl w-full" />
+                  <div className="h-10 bg-zinc-900 rounded-xl w-full" />
                 </div>
               </div>
             ))}
           </div>
         ) : filteredProducts.length === 0 ? (
-          <div className="bg-gray-900/10 border border-dashed border-gray-900 rounded-2xl p-20 text-center font-mono text-xs text-gray-500 max-w-xl mx-auto">
-            SYSTEM_NOTICE // Zero active records match the specified query
-            criteria.
+          <div className="bg-zinc-900/20 border border-dashed border-zinc-800 rounded-3xl p-12 sm:p-16 text-center max-w-lg mx-auto space-y-3">
+            <div className="inline-flex p-4 bg-zinc-900 rounded-2xl text-amber-400 mb-1">
+              <PackageOpen className="w-8 h-8" />
+            </div>
+            <h3 className="text-lg font-bold text-white">No products found</h3>
+            <p className="text-xs text-gray-500">
+              We couldn't find any products matching your search criteria. Try
+              clearing your filters.
+            </p>
           </div>
         ) : (
-          /* Operational Product Grid */
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {filteredProducts.map((product) => (
-              <div
-                key={product.id}
-                className="bg-gray-900/20 border border-gray-900 hover:border-gray-800/80 rounded-2xl overflow-hidden transition duration-200 flex flex-col group"
-              >
-                {/* Visual Media Node Wrapper */}
-                <div className="relative overflow-hidden aspect-video sm:h-44 bg-gray-950 shrink-0">
-                  <img
-                    src={
-                      product.image ||
-                      "https://via.placeholder.com/400x250?text=BLACK+HUB"
-                    }
-                    alt={product.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                  />
-                  {product.type && (
-                    <span className="absolute top-3 left-3 text-[9px] font-mono tracking-wider uppercase px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 backdrop-blur-sm">
-                      {product.type}
-                    </span>
-                  )}
-                </div>
+          <div
+            className={`grid gap-4 sm:gap-6 ${
+              viewMode === "grid"
+                ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+                : "grid-cols-1"
+            }`}
+          >
+            {filteredProducts.map((product) => {
+              const isWishlisted = wishlist?.some(
+                (item) => item.id === product.id,
+              );
 
-                {/* Info & Configurations Payload */}
-                <div className="p-5 flex flex-col flex-1 justify-between">
-                  <div>
-                    <span className="text-[9px] font-mono tracking-widest text-gray-500 uppercase">
-                      {product.category}
-                    </span>
-                    <h3 className="text-base font-bold tracking-tight text-white mt-0.5 group-hover:text-yellow-400 transition truncate">
-                      {product.title}
-                    </h3>
-
-                    {/* Inline Product Verification Metrics */}
-                    <div className="mt-1.5 flex items-center gap-2 text-xs font-mono">
-                      <span className="text-yellow-500">
-                        ★ {product.averageRating.toFixed(1)}
+              return (
+                <div
+                  key={product.id}
+                  className={`group bg-zinc-900/20 border border-zinc-800/85 hover:border-amber-400/50 rounded-2xl sm:rounded-3xl overflow-hidden transition-all duration-300 flex flex-col shadow-xl hover:shadow-2xl hover:shadow-amber-400/5 ${
+                    viewMode === "list" ? "sm:flex-row" : ""
+                  }`}
+                >
+                  {/* Product Image */}
+                  <div
+                    className={`relative overflow-hidden ${
+                      viewMode === "grid"
+                        ? "aspect-video sm:h-44"
+                        : "sm:w-48 md:w-64 aspect-square sm:aspect-auto"
+                    } bg-zinc-950 shrink-0`}
+                  >
+                    <img
+                      src={
+                        product.image ||
+                        "https://via.placeholder.com/400x250?text=Black+Hub"
+                      }
+                      alt={product.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                    />
+                    {product.type && (
+                      <span className="absolute top-3 left-3 text-[10px] font-mono tracking-wider uppercase px-2.5 py-1 rounded-lg bg-black/60 text-emerald-400 border border-emerald-500/20 backdrop-blur-md">
+                        {product.type}
                       </span>
-                      <span className="text-gray-600 text-[10px]">
-                        ({product.totalReviews} Logs)
-                      </span>
-                    </div>
+                    )}
+                    {isWishlisted && (
+                      <div className="absolute top-3 right-3 bg-rose-500/90 backdrop-blur-md rounded-full p-1.5 shadow-lg">
+                        <Heart className="w-3 h-3 fill-white text-white" />
+                      </div>
+                    )}
                   </div>
 
-                  <div>
-                    <h4 className="text-xl font-black font-mono text-white mt-4 border-t border-gray-900 pt-3">
-                      ₦{Number(product.price).toLocaleString()}
-                    </h4>
+                  {/* Product Details */}
+                  <div
+                    className={`p-4 sm:p-5 flex flex-col flex-1 justify-between space-y-3 ${
+                      viewMode === "list" ? "sm:py-4" : ""
+                    }`}
+                  >
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-mono tracking-widest text-amber-400/80 uppercase">
+                        {product.category}
+                      </span>
+                      <h3 className="text-base font-bold tracking-tight text-white group-hover:text-amber-400 transition line-clamp-1">
+                        {product.title}
+                      </h3>
 
-                    {/* Operational Actions Stack */}
-                    <div className="mt-4 space-y-2">
-                      <button
-                        onClick={() => addToCart(product)}
-                        className="w-full bg-yellow-400 hover:bg-yellow-500 text-black py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition duration-150"
-                      >
-                        Add to Cart Directory
-                      </button>
+                      <div className="flex items-center gap-1.5 text-xs font-mono pt-1">
+                        <div className="flex items-center text-amber-400">
+                          <Star className="w-3.5 h-3.5 fill-amber-400" />
+                          <span className="ml-1 font-bold">
+                            {product.averageRating.toFixed(1)}
+                          </span>
+                        </div>
+                        <span className="text-gray-500 text-[11px]">
+                          ({product.totalReviews} reviews)
+                        </span>
+                      </div>
+                    </div>
 
-                      <div className="grid grid-cols-2 gap-2">
-                        <Link
-                          to={`/product/${product.id}`}
-                          className="w-full bg-gray-950 hover:bg-gray-900 text-gray-300 border border-gray-800/60 text-center py-2 rounded-xl font-bold text-[11px] transition"
-                        >
-                          Details
-                        </Link>
+                    <div className="space-y-3 pt-2 border-t border-zinc-900/50">
+                      <div className="flex items-center justify-between">
+                        <span className="text-2xl font-black font-mono text-white">
+                          ₦{Number(product.price).toLocaleString()}
+                        </span>
+                        {product.stock && (
+                          <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full border border-emerald-500/20">
+                            In Stock
+                          </span>
+                        )}
+                      </div>
 
+                      <div className="space-y-2">
                         <button
-                          onClick={() => addWishlist(product)}
-                          className="w-full bg-gray-950 hover:bg-gray-900 text-rose-400 border border-gray-800/60 py-2 rounded-xl font-mono text-[11px] font-bold transition flex items-center justify-center gap-1"
+                          onClick={() => handleAddToCart(product)}
+                          className="w-full bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-black py-3 rounded-2xl font-black text-xs uppercase tracking-wider transition transform active:scale-[0.98] shadow-lg shadow-amber-400/10 cursor-pointer"
                         >
-                          <span>❤️</span> Saved
+                          Add to Cart
                         </button>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <Link
+                            to={`/product/${product.id}`}
+                            className="w-full bg-black hover:bg-zinc-900 text-gray-300 border border-zinc-800 text-center py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1 cursor-pointer"
+                          >
+                            <span>Details</span>
+                          </Link>
+
+                          <button
+                            onClick={() => handleWishlistToggle(product)}
+                            className={`w-full border py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer ${
+                              isWishlisted
+                                ? "bg-rose-500/10 text-rose-400 border-rose-500/30 hover:bg-rose-500/20"
+                                : "bg-black hover:bg-zinc-900 text-rose-400 border-zinc-800"
+                            }`}
+                          >
+                            <Heart
+                              className={`w-3.5 h-3.5 ${
+                                isWishlisted ? "fill-rose-400" : ""
+                              }`}
+                            />
+                            <span>{isWishlisted ? "Saved" : "Save"}</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </main>

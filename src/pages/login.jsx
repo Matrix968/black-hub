@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../context/authContext";
+import { Eye, EyeOff } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const { login } = useAuth();
@@ -8,8 +10,10 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [show, setShow] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  const navigate = useNavigate();
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
@@ -18,6 +22,7 @@ export default function Login() {
     try {
       await login(email, password);
       setSuccess(true);
+      navigate("/");
     } catch (err) {
       // Strips generic Firebase prefixes if present, keeping UI messages clean
       setError(
@@ -38,16 +43,16 @@ export default function Login() {
         <div className="flex items-center gap-2.5 mb-8 justify-center">
           <div className="w-2.5 h-2.5 bg-yellow-400 rounded-full animate-pulse" />
           <h1 className="text-sm font-black tracking-widest text-gray-400 uppercase">
-            Black Hub Suite
+            Black Hub
           </h1>
         </div>
 
         <div className="text-center mb-6">
           <h2 className="text-2xl font-extrabold tracking-tight">
-            Access Gate Node
+            Welcome Back
           </h2>
           <p className="text-xs text-gray-500 mt-1">
-            Provide cryptography credentials to initialize session.
+            Provide login credentials to continue session.
           </p>
         </div>
 
@@ -87,7 +92,7 @@ export default function Login() {
               />
             </svg>
             <span>
-              Handshake complete. Access permissions verified. Redirecting...
+              Login Succesfull redirecting to home page
             </span>
           </div>
         )}
@@ -95,7 +100,7 @@ export default function Login() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-[10px] font-mono tracking-widest text-gray-500 uppercase mb-1.5 ml-1">
-              Routing Endpoint (Email)
+              Enter (Email)
             </label>
             <input
               type="email"
@@ -109,16 +114,22 @@ export default function Login() {
 
           <div>
             <label className="block text-[10px] font-mono tracking-widest text-gray-500 uppercase mb-1.5 ml-1">
-              Security Key Phrase
+              Enter password (secured)
             </label>
             <input
-              type="password"
+              type={show ? "text" : "password"}
               placeholder="••••••••••••"
               required
               disabled={loading || success}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-black border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-yellow-400 disabled:opacity-40 transition duration-150 placeholder:text-gray-800"
+              className="w-full relative bg-black border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-yellow-400 disabled:opacity-40 transition duration-150 placeholder:text-gray-800"
             />
+            <div
+              onClick={() => setShow(!show)}
+              className="absolute right-10 bottom-27"
+            >
+              {show ? <EyeOff /> : <Eye />}
+            </div>
           </div>
 
           <button
@@ -130,15 +141,10 @@ export default function Login() {
               ? "Authenticating Session..."
               : success
                 ? "Authorized"
-                : "Establish Handshake"}
+                : "Continue"}
           </button>
         </form>
       </div>
-
-      {/* Decorative Footprint Subtext */}
-      <p className="text-[10px] text-gray-700 font-mono mt-4 uppercase tracking-widest">
-        Secure Token Engine v2.4.6-LIVE
-      </p>
     </div>
   );
 }
