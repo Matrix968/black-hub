@@ -1,5 +1,14 @@
 import { useEffect, useState } from "react";
-import { collection, query, where, onSnapshot, doc } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  doc,
+  addDoc,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { auth, db } from "../firebase/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
@@ -39,6 +48,11 @@ import {
   Printer,
   Eye,
   Home,
+  MessageSquare,
+  Flag,
+  X,
+  Send,
+  HelpCircle,
 } from "lucide-react";
 
 export default function Dashboard() {
@@ -51,6 +65,19 @@ export default function Dashboard() {
   const [userAvatar, setUserAvatar] = useState("");
   const [copiedKey, setCopiedKey] = useState(null);
   const [viewingOrder, setViewingOrder] = useState(null);
+
+  // Report Issue State
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportOrder, setReportOrder] = useState(null);
+  const [reportMessage, setReportMessage] = useState("");
+  const [reportType, setReportType] = useState("general");
+  const [submittingReport, setSubmittingReport] = useState(false);
+
+  // Message Admin State
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [messageOrder, setMessageOrder] = useState(null);
+  const [adminMessage, setAdminMessage] = useState("");
+  const [submittingMessage, setSubmittingMessage] = useState(false);
 
   // Calculated Metrics
   const deliveredOrders = orders.filter(
@@ -336,6 +363,95 @@ export default function Dashboard() {
     // Save PDF
     doc.save(`invoice_${order.id?.slice(0, 8) || "order"}.pdf`);
     toast.success("Invoice downloaded successfully!");
+  };
+
+  // ==========================================
+  // REPORT ISSUE FUNCTIONS
+  // ==========================================
+  const handleReportIssue = (order) => {
+    setReportOrder(order);
+    setReportMessage("");
+    setReportType("general");
+    setShowReportModal(true);
+  };
+
+  const submitReport = async () => {
+    if (!reportMessage.trim()) {
+      toast.error("Please describe the issue");
+      return;
+    }
+
+    setSubmittingReport(true);
+    try {
+      const user = auth.currentUser;
+
+      await addDoc(collection(db, "reports"), {
+        userId: user?.uid,
+        userEmail: user?.email,
+        orderId: reportOrder?.id,
+        orderNumber: reportOrder?.id?.slice(0, 8),
+        type: reportType,
+        message: reportMessage.trim(),
+        status: "pending",
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+
+      toast.success(
+        "Report submitted successfully! Admin will review it soon.",
+      );
+      setShowReportModal(false);
+      setReportMessage("");
+      setReportType("general");
+    } catch (error) {
+      console.error("Error submitting report:", error);
+      toast.error("Failed to submit report. Please try again.");
+    } finally {
+      setSubmittingReport(false);
+    }
+  };
+
+  // ==========================================
+  // MESSAGE ADMIN FUNCTIONS
+  // ==========================================
+  const handleMessageAdmin = (order) => {
+    setMessageOrder(order);
+    setAdminMessage("");
+    setShowMessageModal(true);
+  };
+
+  const submitMessage = async () => {
+    if (!adminMessage.trim()) {
+      toast.error("Please enter your message");
+      return;
+    }
+
+    setSubmittingMessage(true);
+    try {
+      const user = auth.currentUser;
+
+      await addDoc(collection(db, "messages"), {
+        userId: user?.uid,
+        userEmail: user?.email,
+        userName: userName,
+        orderId: messageOrder?.id,
+        orderNumber: messageOrder?.id?.slice(0, 8),
+        message: adminMessage.trim(),
+        type: "customer_message",
+        status: "unread",
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+
+      toast.success("Message sent to admin successfully!");
+      setShowMessageModal(false);
+      setAdminMessage("");
+    } catch (error) {
+      console.error("Error sending message:", error);
+      toast.error("Failed to send message. Please try again.");
+    } finally {
+      setSubmittingMessage(false);
+    }
   };
 
   const renderStatusBadge = (status) => {
@@ -719,7 +835,7 @@ export default function Dashboard() {
                           ).toLocaleString()}
                         </p>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5">
                         <button
                           onClick={() => setViewingOrder(order)}
                           className="p-2 rounded-xl bg-zinc-800/50 hover:bg-zinc-700 text-zinc-400 hover:text-amber-400 transition border border-zinc-700 hover:border-amber-500/30"
@@ -733,6 +849,20 @@ export default function Dashboard() {
                           title="Download Invoice PDF"
                         >
                           <Printer className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleMessageAdmin(order)}
+                          className="p-2 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 hover:text-blue-300 transition border border-blue-500/20 hover:border-blue-500/30"
+                          title="Message Admin"
+                        >
+                          <MessageSquare className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleReportIssue(order)}
+                          className="p-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 hover:text-amber-300 transition border border-amber-500/20 hover:border-amber-500/30"
+                          title="Report Issue"
+                        >
+                          <Flag className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
@@ -934,12 +1064,172 @@ export default function Dashboard() {
               <button
                 onClick={() => {
                   setViewingOrder(null);
-                  navigate("/shop");
+                  handleMessageAdmin(viewingOrder);
                 }}
-                className="flex-1 min-w-[120px] px-4 py-3 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold rounded-xl text-xs transition flex items-center justify-center gap-2"
+                className="flex-1 min-w-[120px] px-4 py-3 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 font-bold rounded-xl text-xs transition flex items-center justify-center gap-2 border border-blue-500/20"
               >
-                <ShoppingBag className="w-4 h-4" /> Shop More
+                <MessageSquare className="w-4 h-4" /> Message Admin
               </button>
+              <button
+                onClick={() => {
+                  setViewingOrder(null);
+                  handleReportIssue(viewingOrder);
+                }}
+                className="flex-1 min-w-[120px] px-4 py-3 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 font-bold rounded-xl text-xs transition flex items-center justify-center gap-2 border border-amber-500/20"
+              >
+                <Flag className="w-4 h-4" /> Report Issue
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================== */}
+      {/* REPORT ISSUE MODAL                        */}
+      {/* ========================================== */}
+      {showReportModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-zinc-950/95 border border-amber-500/30 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl shadow-amber-500/10">
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <h2 className="text-xl font-black text-white flex items-center gap-2">
+                  <Flag className="w-5 h-5 text-amber-400" />
+                  Report Issue
+                </h2>
+                <p className="text-xs text-zinc-400 font-mono">
+                  Order #{reportOrder?.id?.slice(0, 8)}
+                </p>
+              </div>
+              <button
+                onClick={() => setShowReportModal(false)}
+                className="p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">
+                  Issue Type
+                </label>
+                <select
+                  value={reportType}
+                  onChange={(e) => setReportType(e.target.value)}
+                  className="w-full bg-zinc-900/80 border border-zinc-800 focus:border-amber-500/50 rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition"
+                >
+                  <option value="general">General Issue</option>
+                  <option value="delivery">Delivery Problem</option>
+                  <option value="product">Product Issue</option>
+                  <option value="payment">Payment Problem</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">
+                  Describe the Issue
+                </label>
+                <textarea
+                  rows={4}
+                  value={reportMessage}
+                  onChange={(e) => setReportMessage(e.target.value)}
+                  placeholder="Please provide details about the issue..."
+                  className="w-full bg-zinc-900/80 border border-zinc-800 focus:border-amber-500/50 rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition resize-none"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={() => setShowReportModal(false)}
+                  className="flex-1 px-4 py-3 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold rounded-xl text-xs transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={submitReport}
+                  disabled={submittingReport}
+                  className="flex-1 px-4 py-3 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-black font-black rounded-xl text-xs transition flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {submittingReport ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                      Submitting...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" /> Submit Report
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================== */}
+      {/* MESSAGE ADMIN MODAL                       */}
+      {/* ========================================== */}
+      {showMessageModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-zinc-950/95 border border-blue-500/30 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl shadow-blue-500/10">
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <h2 className="text-xl font-black text-white flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5 text-blue-400" />
+                  Message Admin
+                </h2>
+                <p className="text-xs text-zinc-400 font-mono">
+                  Order #{messageOrder?.id?.slice(0, 8)}
+                </p>
+              </div>
+              <button
+                onClick={() => setShowMessageModal(false)}
+                className="p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">
+                  Your Message
+                </label>
+                <textarea
+                  rows={4}
+                  value={adminMessage}
+                  onChange={(e) => setAdminMessage(e.target.value)}
+                  placeholder="Write your message to admin..."
+                  className="w-full bg-zinc-900/80 border border-zinc-800 focus:border-blue-500/50 rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition resize-none"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={() => setShowMessageModal(false)}
+                  className="flex-1 px-4 py-3 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold rounded-xl text-xs transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={submitMessage}
+                  disabled={submittingMessage}
+                  className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-400 hover:to-cyan-300 text-white font-black rounded-xl text-xs transition flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {submittingMessage ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" /> Send Message
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>
