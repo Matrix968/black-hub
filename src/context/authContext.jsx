@@ -29,7 +29,7 @@ export default function AuthProvider({ children }) {
       uid: user.uid,
       fullName,
       email,
-      role: "customer",
+      role: "customer", // Default role for new users
       createdAt: serverTimestamp(),
     });
   };
@@ -41,6 +41,9 @@ export default function AuthProvider({ children }) {
   // Logout
   const logout = () => signOut(auth);
 
+  // Check if user is admin
+  const isAdmin = userData?.role === "admin";
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
@@ -49,6 +52,8 @@ export default function AuthProvider({ children }) {
         const snap = await getDoc(doc(db, "users", currentUser.uid));
         if (snap.exists()) {
           setUserData(snap.data());
+        } else {
+          setUserData(null);
         }
       } else {
         setUserData(null);
@@ -60,17 +65,18 @@ export default function AuthProvider({ children }) {
     return unsubscribe;
   }, []);
 
+  const value = {
+    user,
+    userData,
+    register,
+    login,
+    logout,
+    loading,
+    isAdmin, // Add this helper
+  };
+
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        userData,
-        register,
-        login,
-        logout,
-        loading,
-      }}
-    >
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

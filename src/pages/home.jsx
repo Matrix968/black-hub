@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/authContext";
 import {
   Search,
   ShieldCheck,
@@ -73,7 +74,7 @@ import {
 } from "lucide-react";
 
 // ==========================================
-// IMPORT EXISTING DATA SOURCES
+// DEMO PRODUCTS
 // ==========================================
 const DEMO_PRODUCTS = [
   {
@@ -105,7 +106,9 @@ const DEMO_PRODUCTS = [
   },
 ];
 
-// Social Media Icons (SVG)
+// ==========================================
+// SOCIAL MEDIA ICONS (SVG)
+// ==========================================
 const TwitterIcon = () => (
   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -132,37 +135,101 @@ const InstagramIcon = () => (
 
 export default function Home() {
   const navigate = useNavigate();
+  const { user, userData, isAdmin, loading } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [expandedFaq, setExpandedFaq] = useState(null);
-
+  
   // Cookie Consent State
   const [showCookieModal, setShowCookieModal] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [cookiesAccepted, setCookiesAccepted] = useState(false);
 
-  // Check if user has already accepted cookies
+  // ==========================================
+  // LOCALSTORAGE MANAGEMENT
+  // ==========================================
+  const COOKIE_KEY = "blackhub_cookies";
+  const LOGIN_PROMPT_KEY = "blackhub_login_prompt";
+
+  // Check localStorage on mount
   useEffect(() => {
-    const cookieConsent = localStorage.getItem("blackhub_cookies");
+    const cookieConsent = localStorage.getItem(COOKIE_KEY);
+    const loginPromptShown = sessionStorage.getItem(LOGIN_PROMPT_KEY);
+    
+    // === COOKIE CONSENT CHECK ===
     if (cookieConsent === "accepted") {
       setCookiesAccepted(true);
-      // Show login prompt after cookie acceptance
-      const loginPromptShown = localStorage.getItem("blackhub_login_prompt");
-      if (!loginPromptShown) {
+      // Cookie is accepted, don't show cookie modal ever again
+      setShowCookieModal(false);
+      
+      // Only show login prompt if:
+      // 1. User is NOT logged in
+      // 2. Login prompt hasn't been dismissed in this session
+      if (!user && !loginPromptShown) {
         setTimeout(() => {
           setShowLoginPrompt(true);
         }, 3000);
       }
-    } else if (!cookieConsent) {
-      // Show cookie modal after 2 seconds
+    } else if (cookieConsent === "rejected") {
+      // User rejected cookies, don't show cookie modal again
+      setShowCookieModal(false);
+    } else {
+      // No cookie consent yet, show the modal
       setTimeout(() => {
         setShowCookieModal(true);
       }, 2000);
     }
-  }, []);
+  }, [user]);
 
-  // Keyboard shortcut for search
+  // Clear login prompt when user logs in
+  useEffect(() => {
+    if (user) {
+      sessionStorage.removeItem(LOGIN_PROMPT_KEY);
+      setShowLoginPrompt(false);
+    }
+  }, [user]);
+
+  // ==========================================
+  // COOKIE HANDLERS
+  // ==========================================
+  const handleAcceptCookies = () => {
+    localStorage.setItem(COOKIE_KEY, "accepted");
+    setCookiesAccepted(true);
+    setShowCookieModal(false); // Close modal immediately
+    
+    // Only show login prompt if user is NOT logged in
+    if (!user) {
+      setTimeout(() => {
+        setShowLoginPrompt(true);
+      }, 1500);
+    }
+  };
+
+  const handleRejectCookies = () => {
+    localStorage.setItem(COOKIE_KEY, "rejected");
+    setShowCookieModal(false); // Close modal
+  };
+
+  // ==========================================
+  // LOGIN PROMPT HANDLERS
+  // ==========================================
+  const handleCloseLoginPrompt = () => {
+    setShowLoginPrompt(false);
+    // Use sessionStorage so it clears when tab is closed
+    sessionStorage.setItem(LOGIN_PROMPT_KEY, "dismissed");
+  };
+
+  const handleLoginNow = () => {
+    setShowLoginPrompt(false);
+    // Remove session storage so it shows again next session
+    sessionStorage.removeItem(LOGIN_PROMPT_KEY);
+    navigate("/login");
+  };
+
+  // ==========================================
+  // KEYBOARD SHORTCUTS
+  // ==========================================
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -174,7 +241,9 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // Prevent body scroll when mobile menu is open
+  // ==========================================
+  // BODY SCROLL LOCK FOR MOBILE MENU
+  // ==========================================
   useEffect(() => {
     if (mobileMenuOpen) {
       document.body.style.overflow = "hidden";
@@ -186,40 +255,18 @@ export default function Home() {
     };
   }, [mobileMenuOpen]);
 
-  // Navigation handlers
+  // ==========================================
+  // NAVIGATION HANDLER
+  // ==========================================
   const navigateTo = (path) => {
     navigate(path);
     setMobileMenuOpen(false);
     setSearchOpen(false);
   };
 
-  // Cookie handlers
-  const handleAcceptCookies = () => {
-    localStorage.setItem("blackhub_cookies", "accepted");
-    setCookiesAccepted(true);
-    setShowCookieModal(false);
-    // Show login prompt after acceptance
-    setTimeout(() => {
-      setShowLoginPrompt(true);
-    }, 1500);
-  };
-
-  const handleRejectCookies = () => {
-    localStorage.setItem("blackhub_cookies", "rejected");
-    setShowCookieModal(false);
-  };
-
-  const handleCloseLoginPrompt = () => {
-    setShowLoginPrompt(false);
-    localStorage.setItem("blackhub_login_prompt", "dismissed");
-  };
-
-  const handleLoginNow = () => {
-    setShowLoginPrompt(false);
-    navigate("/login");
-  };
-
-  // Animation variants
+  // ==========================================
+  // ANIMATION VARIANTS
+  // ==========================================
   const itemVariants = {
     hidden: { y: 15, opacity: 0 },
     visible: {
@@ -233,7 +280,9 @@ export default function Home() {
     },
   };
 
-  // Data for sections
+  // ==========================================
+  // DATA FOR SECTIONS
+  // ==========================================
   const stats = [
     { value: "85K+", label: "Active Users", icon: Users },
     { value: "120+", label: "Countries Served", icon: Globe2 },
@@ -366,10 +415,14 @@ export default function Home() {
     { id: "nav-categories", label: "Categories", path: "/shop", icon: Grid },
   ];
 
+  // ==========================================
+  // RENDER
+  // ==========================================
   return (
     <div className="relative min-h-screen bg-[#050507] text-white font-sans selection:bg-amber-400 selection:text-black overflow-x-hidden">
+      
       {/* ========================================== */}
-      {/* COOKIE CONSENT MODAL                       */}
+      {/* COOKIE CONSENT MODAL - Only shows if no consent given yet */}
       {/* ========================================== */}
       <AnimatePresence>
         {showCookieModal && (
@@ -385,13 +438,11 @@ export default function Home() {
               exit={{ scale: 0.9, y: 20 }}
               className="bg-zinc-950/95 border border-amber-500/30 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl shadow-amber-500/10 relative overflow-hidden"
             >
-              {/* Decorative Top Accent */}
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent" />
               <div className="absolute -top-20 -right-20 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl" />
               <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-yellow-500/10 rounded-full blur-3xl" />
 
               <div className="relative z-10 text-center space-y-5">
-                {/* Cookie Icon */}
                 <motion.div
                   initial={{ scale: 0, rotate: -180 }}
                   animate={{ scale: 1, rotate: 0 }}
@@ -440,10 +491,10 @@ export default function Home() {
       </AnimatePresence>
 
       {/* ========================================== */}
-      {/* LOGIN PROMPT MODAL                         */}
+      {/* LOGIN PROMPT MODAL - Only shows if user is NOT logged in */}
       {/* ========================================== */}
       <AnimatePresence>
-        {showLoginPrompt && (
+        {showLoginPrompt && !user && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -456,22 +507,15 @@ export default function Home() {
               exit={{ scale: 0.9, y: 20 }}
               className="bg-zinc-950/95 border border-amber-500/30 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl shadow-amber-500/10 relative overflow-hidden"
             >
-              {/* Decorative Top Accent */}
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent" />
               <div className="absolute -top-20 -right-20 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl" />
               <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-yellow-500/10 rounded-full blur-3xl" />
 
               <div className="relative z-10 text-center space-y-5">
-                {/* Login Prompt Icon */}
                 <motion.div
                   initial={{ scale: 0, rotate: -180 }}
                   animate={{ scale: 1, rotate: 0 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 400,
-                    damping: 15,
-                    delay: 0.2,
-                  }}
+                  transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.2 }}
                   className="inline-flex p-3 bg-gradient-to-br from-amber-400 to-yellow-400 rounded-2xl shadow-lg shadow-amber-400/20"
                 >
                   <Crown className="w-10 h-10 text-black" />
@@ -487,7 +531,6 @@ export default function Home() {
                   </p>
                 </div>
 
-                {/* Features List */}
                 <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4 space-y-2 text-left">
                   <div className="flex items-center gap-2 text-xs text-zinc-300">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
@@ -528,6 +571,7 @@ export default function Home() {
                   <button
                     onClick={() => {
                       setShowLoginPrompt(false);
+                      sessionStorage.removeItem(LOGIN_PROMPT_KEY);
                       navigate("/register");
                     }}
                     className="text-amber-400 hover:text-amber-300 transition font-bold"
@@ -541,7 +585,9 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* Aurora Animated Background - Optimized */}
+      {/* ========================================== */}
+      {/* AURORA ANIMATED BACKGROUND                 */}
+      {/* ========================================== */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-amber-500/15 via-yellow-500/8 to-transparent blur-[120px] rounded-full" />
         <div className="absolute top-1/4 right-0 w-[600px] h-[400px] bg-gradient-to-b from-purple-500/8 to-transparent blur-[100px] rounded-full" />
@@ -549,7 +595,9 @@ export default function Home() {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#141417_1px,transparent_1px),linear-gradient(to_bottom,#141417_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20" />
       </div>
 
-      {/* Floating Lights - Optimized */}
+      {/* ========================================== */}
+      {/* FLOATING LIGHTS                            */}
+      {/* ========================================== */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-20 left-10 w-48 h-48 bg-amber-400/8 rounded-full blur-3xl" />
         <div className="absolute bottom-20 right-10 w-48 h-48 bg-yellow-400/8 rounded-full blur-3xl" />
@@ -582,18 +630,38 @@ export default function Home() {
             ))}
 
             <div className="flex items-center gap-2 xl:gap-3 ml-4 pl-4 border-l border-zinc-800">
-              <Link key="login" to="/login">
-                <button className="flex items-center gap-1 xl:gap-2 px-2 xl:px-3 py-1.5 rounded-lg text-xs font-bold bg-zinc-900 border border-zinc-800 hover:border-amber-500/50 transition">
-                  <LogIn className="w-3.5 h-3.5" />
-                  <span className="hidden xl:inline">Login</span>
-                </button>
-              </Link>
-              <Link key="register" to="/register">
-                <button className="flex items-center gap-1 xl:gap-2 px-2 xl:px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-400 text-black hover:bg-amber-300 transition shadow-lg shadow-amber-400/20">
-                  <UserPlus className="w-3.5 h-3.5" />
-                  <span className="hidden xl:inline">Register</span>
-                </button>
-              </Link>
+              {/* Login Button - Only show if user is NOT logged in */}
+              {!user && (
+                <Link key="login" to="/login">
+                  <button className="flex items-center gap-1 xl:gap-2 px-2 xl:px-3 py-1.5 rounded-lg text-xs font-bold bg-zinc-900 border border-zinc-800 hover:border-amber-500/50 transition">
+                    <LogIn className="w-3.5 h-3.5" />
+                    <span className="hidden xl:inline">Login</span>
+                  </button>
+                </Link>
+              )}
+              
+              {/* Register Button - Only show if user is NOT logged in */}
+              {!user && (
+                <Link key="register" to="/register">
+                  <button className="flex items-center gap-1 xl:gap-2 px-2 xl:px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-400 text-black hover:bg-amber-300 transition shadow-lg shadow-amber-400/20">
+                    <UserPlus className="w-3.5 h-3.5" />
+                    <span className="hidden xl:inline">Register</span>
+                  </button>
+                </Link>
+              )}
+              
+              {/* Show user avatar when logged in */}
+              {user && (
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center text-black font-bold text-xs">
+                    {userData?.fullName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "U"}
+                  </div>
+                  <span className="text-xs text-zinc-400 hidden xl:block">
+                    {userData?.fullName || user?.email?.split("@")[0]}
+                  </span>
+                </div>
+              )}
+              
               <Link key="cart" to="/cart">
                 <button className="relative p-2 rounded-xl bg-zinc-900 border border-amber-500/30 text-amber-400 hover:bg-amber-500/10 transition">
                   <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -604,6 +672,16 @@ export default function Home() {
                   <LayoutDashboard className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
               </Link>
+              
+              {/* Admin Button - Only visible to admins */}
+              {!loading && isAdmin && (
+                <Link key="admin" to="/admin">
+                  <button className="flex items-center gap-1 xl:gap-2 px-2 xl:px-3 py-1.5 rounded-lg text-xs font-bold bg-gradient-to-r from-amber-400 to-yellow-400 text-black hover:from-amber-300 hover:to-yellow-300 transition shadow-lg shadow-amber-400/20">
+                    <Shield className="w-3.5 h-3.5" />
+                    <span className="hidden xl:inline">Admin</span>
+                  </button>
+                </Link>
+              )}
             </div>
 
             <button
@@ -632,6 +710,15 @@ export default function Home() {
                 <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </Link>
+
+            {/* Admin Button for Mobile */}
+            {!loading && isAdmin && (
+              <Link to="/admin">
+                <button className="p-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 text-black hover:from-amber-300 hover:to-yellow-300 transition shadow-lg shadow-amber-400/20">
+                  <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
+                </button>
+              </Link>
+            )}
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -672,31 +759,70 @@ export default function Home() {
               ))}
 
               <div className="flex flex-col gap-3 pt-6">
-                <Link key="mobile-login" to="/login">
-                  <button
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="w-full text-left text-zinc-300 hover:text-amber-400 transition flex items-center gap-4 py-3 border-b border-zinc-800/50"
-                  >
-                    <LogIn className="w-6 h-6 text-amber-400" />
-                    Login
-                  </button>
-                </Link>
-                <Link key="mobile-register" to="/register">
-                  <button
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="w-full text-left text-amber-400 transition flex items-center gap-4 py-3"
-                  >
-                    <UserPlus className="w-6 h-6" />
-                    Register
-                  </button>
-                </Link>
+                {/* Login - Only show if user is NOT logged in */}
+                {!user && (
+                  <Link key="mobile-login" to="/login">
+                    <button
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="w-full text-left text-zinc-300 hover:text-amber-400 transition flex items-center gap-4 py-3 border-b border-zinc-800/50"
+                    >
+                      <LogIn className="w-6 h-6 text-amber-400" />
+                      Login
+                    </button>
+                  </Link>
+                )}
+                
+                {/* Register - Only show if user is NOT logged in */}
+                {!user && (
+                  <Link key="mobile-register" to="/register">
+                    <button
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="w-full text-left text-amber-400 transition flex items-center gap-4 py-3"
+                    >
+                      <UserPlus className="w-6 h-6" />
+                      Register
+                    </button>
+                  </Link>
+                )}
+                
+                {/* Show user info when logged in */}
+                {user && (
+                  <div className="flex items-center gap-3 py-3 border-b border-zinc-800/50">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center text-black font-bold text-sm">
+                      {userData?.fullName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "U"}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-white">
+                        {userData?.fullName || user?.email?.split("@")[0]}
+                      </p>
+                      <p className="text-[10px] text-zinc-400 font-mono">
+                        {user?.email}
+                      </p>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Admin Button for Mobile Menu */}
+                {!loading && isAdmin && (
+                  <Link key="mobile-admin" to="/admin">
+                    <button
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="w-full text-left text-amber-400 transition flex items-center gap-4 py-3 border-b border-zinc-800/50"
+                    >
+                      <Shield className="w-6 h-6" />
+                      Admin Panel
+                    </button>
+                  </Link>
+                )}
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Search Modal */}
+      {/* ========================================== */}
+      {/* SEARCH MODAL                               */}
+      {/* ========================================== */}
       <AnimatePresence>
         {searchOpen && (
           <motion.div
@@ -762,14 +888,13 @@ export default function Home() {
       </AnimatePresence>
 
       {/* ========================================== */}
-      {/* HOME PAGE - PURE PRESENTATION              */}
+      {/* HOME PAGE CONTENT - Keeping the same */}
       {/* ========================================== */}
       <main className="relative">
-        {/* ================= HERO SECTION ================= */}
+        {/* Hero Section - Keep the same */}
         <section className="relative min-h-[80vh] sm:min-h-[90vh] flex items-center overflow-hidden py-12 sm:py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full">
             <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-              {/* Hero Content */}
               <motion.div
                 variants={itemVariants}
                 initial="hidden"
@@ -808,7 +933,6 @@ export default function Home() {
                   </Link>
                 </div>
 
-                {/* Trust Badges */}
                 <div className="flex flex-wrap items-center gap-4 sm:gap-6 pt-2 sm:pt-4">
                   <div className="flex items-center gap-2">
                     <div className="flex -space-x-2">
@@ -834,7 +958,6 @@ export default function Home() {
                 </div>
               </motion.div>
 
-              {/* Hero Graphic - Floating Elements */}
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -888,7 +1011,9 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ================= STATISTICS SECTION ================= */}
+        {/* ========================================== */}
+        {/* STATISTICS SECTION - Keep the same */}
+        {/* ========================================== */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-zinc-950/90 border border-amber-500/20 backdrop-blur-xl">
             {stats.map((stat, i) => (
@@ -912,7 +1037,9 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ================= FEATURES SECTION ================= */}
+        {/* ========================================== */}
+        {/* FEATURES SECTION - Keep the same */}
+        {/* ========================================== */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
           <div className="text-center space-y-3 sm:space-y-4 mb-12 sm:mb-16">
             <span className="text-[10px] sm:text-xs uppercase tracking-widest text-amber-400 font-bold">
@@ -956,7 +1083,9 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ================= CATEGORIES SECTION ================= */}
+        {/* ========================================== */}
+        {/* CATEGORIES SECTION - Keep the same */}
+        {/* ========================================== */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
           <div className="text-center space-y-3 sm:space-y-4 mb-12 sm:mb-16">
             <span className="text-[10px] sm:text-xs uppercase tracking-widest text-amber-400 font-bold">
@@ -996,7 +1125,9 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ================= FEATURED PRODUCTS PREVIEW ================= */}
+        {/* ========================================== */}
+        {/* FEATURED PRODUCTS SECTION - Keep the same */}
+        {/* ========================================== */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-12 sm:mb-16">
             <div className="space-y-2 sm:space-y-4">
@@ -1060,7 +1191,9 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ================= TESTIMONIALS ================= */}
+        {/* ========================================== */}
+        {/* TESTIMONIALS SECTION - Keep the same */}
+        {/* ========================================== */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
           <div className="text-center space-y-3 sm:space-y-4 mb-12 sm:mb-16">
             <span className="text-[10px] sm:text-xs uppercase tracking-widest text-amber-400 font-bold">
@@ -1113,7 +1246,9 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ================= SECURITY SECTION ================= */}
+        {/* ========================================== */}
+        {/* SECURITY SECTION - Keep the same */}
+        {/* ========================================== */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
           <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div className="space-y-4 sm:space-y-6 order-2 md:order-1">
@@ -1175,7 +1310,9 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ================= FAQ SECTION ================= */}
+        {/* ========================================== */}
+        {/* FAQ SECTION - Keep the same */}
+        {/* ========================================== */}
         <section className="max-w-4xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
           <div className="text-center space-y-3 sm:space-y-4 mb-12 sm:mb-16">
             <span className="text-[10px] sm:text-xs uppercase tracking-widest text-amber-400 font-bold">
@@ -1218,7 +1355,9 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ================= CTA BANNER ================= */}
+        {/* ========================================== */}
+        {/* CTA BANNER - Keep the same */}
+        {/* ========================================== */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
           <div className="relative p-6 sm:p-8 md:p-12 lg:p-20 rounded-3xl sm:rounded-4xl overflow-hidden bg-gradient-to-br from-amber-500/20 via-yellow-500/10 to-transparent border border-amber-500/30">
             <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-transparent blur-3xl" />
@@ -1248,7 +1387,9 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ================= NEWSLETTER ================= */}
+        {/* ========================================== */}
+        {/* NEWSLETTER SECTION - Keep the same */}
+        {/* ========================================== */}
         <section className="max-w-3xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
           <div className="text-center space-y-4 sm:space-y-6">
             <Mail className="w-10 h-10 sm:w-12 sm:h-12 text-amber-400 mx-auto" />
@@ -1273,7 +1414,9 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ================= PREMIUM FOOTER ================= */}
+        {/* ========================================== */}
+        {/* PREMIUM FOOTER - Keep the same */}
+        {/* ========================================== */}
         <footer className="border-t border-amber-500/20 bg-zinc-950/50 backdrop-blur-xl py-12 sm:py-16 mt-0">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12">
