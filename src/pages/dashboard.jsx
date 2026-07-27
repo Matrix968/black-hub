@@ -65,6 +65,7 @@ export default function Dashboard() {
   const [userAvatar, setUserAvatar] = useState("");
   const [copiedKey, setCopiedKey] = useState(null);
   const [viewingOrder, setViewingOrder] = useState(null);
+  const [showCredentials, setShowCredentials] = useState(false);
 
   // Report Issue State
   const [showReportModal, setShowReportModal] = useState(false);
@@ -199,10 +200,10 @@ export default function Dashboard() {
     }
   };
 
-  const copyToClipboard = (text, key) => {
+  const copyToClipboard = (text, field) => {
     navigator.clipboard.writeText(text);
-    setCopiedKey(key);
-    toast.success("Copied to clipboard!");
+    setCopiedKey(field);
+    toast.success(`${field} copied!`);
     setTimeout(() => setCopiedKey(null), 2500);
   };
 
@@ -452,6 +453,193 @@ export default function Dashboard() {
     } finally {
       setSubmittingMessage(false);
     }
+  };
+
+  // ==========================================
+  // DELIVERY DETAILS COMPONENT
+  // ==========================================
+  const DeliveryDetails = ({ delivery, order }) => {
+    const [showCreds, setShowCreds] = useState(false);
+    const [copiedField, setCopiedField] = useState(null);
+
+    const handleCopy = (text, field) => {
+      navigator.clipboard.writeText(text);
+      setCopiedField(field);
+      toast.success(`${field} copied!`);
+      setTimeout(() => setCopiedField(null), 2000);
+    };
+
+    if (!delivery) return null;
+
+    return (
+      <div className="mt-4 p-4 bg-zinc-900/80 border border-emerald-500/30 rounded-xl">
+        <div className="flex items-center gap-2 mb-3">
+          <Truck className="w-4 h-4 text-emerald-400" />
+          <h4 className="text-sm font-bold text-white">Delivery Information</h4>
+          <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+            Delivered
+          </span>
+        </div>
+
+        {/* Delivery Status */}
+        <div className="flex items-center gap-2 text-xs text-emerald-400 mb-3">
+          <CheckCircle2 className="w-3.5 h-3.5" />
+          <span>
+            Delivered on{" "}
+            {delivery.deliveredAt?.toDate?.()?.toLocaleDateString() || "N/A"}
+          </span>
+        </div>
+
+        {/* Credentials */}
+        <div className="space-y-2">
+          {/* Email */}
+          {delivery.email && (
+            <div className="flex items-center justify-between p-2 bg-zinc-950/50 rounded-lg border border-zinc-800">
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <Key className="w-3.5 h-3.5 text-amber-400" />
+                <span className="text-xs text-zinc-400 font-mono">Email:</span>
+                <span className="text-xs text-white font-mono truncate">
+                  {delivery.email}
+                </span>
+              </div>
+              <button
+                onClick={() => handleCopy(delivery.email, "Email")}
+                className="p-1 hover:bg-zinc-800 rounded-lg transition flex-shrink-0"
+              >
+                {copiedField === "Email" ? (
+                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                ) : (
+                  <Copy className="w-3.5 h-3.5 text-zinc-400 hover:text-white" />
+                )}
+              </button>
+            </div>
+          )}
+
+          {/* Password */}
+          {delivery.password && (
+            <div className="flex items-center justify-between p-2 bg-zinc-950/50 rounded-lg border border-zinc-800">
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <Key className="w-3.5 h-3.5 text-amber-400" />
+                <span className="text-xs text-zinc-400 font-mono">
+                  Password:
+                </span>
+                <span className="text-xs text-white font-mono">
+                  {showCreds ? delivery.password : "••••••••••••"}
+                </span>
+              </div>
+              <div className="flex gap-1 flex-shrink-0">
+                <button
+                  onClick={() => setShowCreds(!showCreds)}
+                  className="p-1 hover:bg-zinc-800 rounded-lg transition"
+                >
+                  {showCreds ? (
+                    <Eye className="w-3.5 h-3.5 text-zinc-400 hover:text-white" />
+                  ) : (
+                    <Eye className="w-3.5 h-3.5 text-zinc-400 hover:text-white" />
+                  )}
+                </button>
+                <button
+                  onClick={() => handleCopy(delivery.password, "Password")}
+                  className="p-1 hover:bg-zinc-800 rounded-lg transition"
+                >
+                  {copiedField === "Password" ? (
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  ) : (
+                    <Copy className="w-3.5 h-3.5 text-zinc-400 hover:text-white" />
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* License Key */}
+          {delivery.licenseKey && (
+            <div className="flex items-center justify-between p-2 bg-zinc-950/50 rounded-lg border border-zinc-800">
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <Key className="w-3.5 h-3.5 text-amber-400" />
+                <span className="text-xs text-zinc-400 font-mono">
+                  License Key:
+                </span>
+                <span className="text-xs text-amber-400 font-mono font-bold">
+                  {showCreds ? delivery.licenseKey : "••••-••••-••••-••••"}
+                </span>
+              </div>
+              <div className="flex gap-1 flex-shrink-0">
+                <button
+                  onClick={() => setShowCreds(!showCreds)}
+                  className="p-1 hover:bg-zinc-800 rounded-lg transition"
+                >
+                  {showCreds ? (
+                    <Eye className="w-3.5 h-3.5 text-zinc-400 hover:text-white" />
+                  ) : (
+                    <Eye className="w-3.5 h-3.5 text-zinc-400 hover:text-white" />
+                  )}
+                </button>
+                <button
+                  onClick={() => handleCopy(delivery.licenseKey, "License Key")}
+                  className="p-1 hover:bg-zinc-800 rounded-lg transition"
+                >
+                  {copiedField === "License Key" ? (
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  ) : (
+                    <Copy className="w-3.5 h-3.5 text-zinc-400 hover:text-white" />
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Download Link */}
+          {delivery.downloadLink && (
+            <div className="flex items-center justify-between p-2 bg-zinc-950/50 rounded-lg border border-zinc-800">
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <Download className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-xs text-zinc-400 font-mono">
+                  Download:
+                </span>
+                <a
+                  href={delivery.downloadLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-amber-400 hover:text-amber-300 truncate max-w-[150px] sm:max-w-[200px]"
+                >
+                  {delivery.downloadLink.length > 30
+                    ? `${delivery.downloadLink.substring(0, 30)}...`
+                    : delivery.downloadLink}
+                </a>
+              </div>
+              <button
+                onClick={() => window.open(delivery.downloadLink, "_blank")}
+                className="p-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg transition flex-shrink-0"
+              >
+                <ExternalLink className="w-3.5 h-3.5 text-emerald-400" />
+              </button>
+            </div>
+          )}
+
+          {/* Expiry Date */}
+          {delivery.expiryDate && (
+            <div className="flex items-center gap-2 p-2 bg-zinc-950/50 rounded-lg border border-zinc-800">
+              <Clock className="w-3.5 h-3.5 text-amber-400" />
+              <span className="text-xs text-zinc-400 font-mono">Expires:</span>
+              <span className="text-xs text-white font-mono">
+                {new Date(delivery.expiryDate).toLocaleDateString()}
+              </span>
+            </div>
+          )}
+
+          {/* Notes */}
+          {delivery.notes && (
+            <div className="p-2 bg-amber-500/5 rounded-lg border border-amber-500/20">
+              <p className="text-xs text-zinc-400 font-mono">
+                <span className="font-bold text-amber-400">📝 Note:</span>{" "}
+                {delivery.notes}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    );
   };
 
   const renderStatusBadge = (status) => {
@@ -902,6 +1090,65 @@ export default function Dashboard() {
                       </div>
                     </div>
                   )}
+
+                  {/* ========================================== */}
+                  {/* DELIVERY DETAILS - SHOW WHEN DELIVERED    */}
+                  {/* ========================================== */}
+                  {order.status === "Delivered" && order.delivery && (
+                    <div className="mt-2 pt-3 border-t border-emerald-500/20">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Truck className="w-4 h-4 text-emerald-400" />
+                        <span className="text-xs font-bold text-emerald-400">
+                          ✓ Delivered
+                        </span>
+                        <span className="text-[10px] text-zinc-500 font-mono">
+                          {order.delivery.deliveredAt
+                            ?.toDate?.()
+                            ?.toLocaleDateString() || "N/A"}
+                        </span>
+                      </div>
+
+                      {/* Quick Delivery Info Preview */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {order.delivery.email && (
+                          <div className="flex items-center gap-2 p-2 bg-zinc-950/50 rounded-lg border border-zinc-800">
+                            <Key className="w-3 h-3 text-amber-400" />
+                            <span className="text-[10px] text-zinc-400 font-mono truncate">
+                              {order.delivery.email}
+                            </span>
+                          </div>
+                        )}
+                        {order.delivery.downloadLink && (
+                          <div className="flex items-center gap-2 p-2 bg-zinc-950/50 rounded-lg border border-zinc-800">
+                            <Download className="w-3 h-3 text-emerald-400" />
+                            <a
+                              href={order.delivery.downloadLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[10px] text-amber-400 hover:text-amber-300 truncate"
+                            >
+                              Download
+                            </a>
+                          </div>
+                        )}
+                        {order.delivery.licenseKey && (
+                          <div className="flex items-center gap-2 p-2 bg-zinc-950/50 rounded-lg border border-zinc-800">
+                            <Key className="w-3 h-3 text-amber-400" />
+                            <span className="text-[10px] text-amber-400 font-mono font-bold">
+                              {order.delivery.licenseKey.slice(0, 8)}...
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <button
+                        onClick={() => setViewingOrder(order)}
+                        className="mt-2 text-[10px] text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1"
+                      >
+                        <Eye className="w-3 h-3" /> View Full Delivery Details
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
 
@@ -1050,6 +1297,18 @@ export default function Dashboard() {
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* ========================================== */}
+            {/* DELIVERY DETAILS IN MODAL                 */}
+            {/* ========================================== */}
+            {viewingOrder.status === "Delivered" && viewingOrder.delivery && (
+              <div className="mb-6">
+                <DeliveryDetails
+                  delivery={viewingOrder.delivery}
+                  order={viewingOrder}
+                />
               </div>
             )}
 
