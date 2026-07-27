@@ -4,6 +4,8 @@ import { auth, db } from "../firebase/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 // Lucide React Icons
 import {
@@ -34,6 +36,9 @@ import {
   Gift,
   Zap,
   Crown,
+  Printer,
+  Eye,
+  Home,
 } from "lucide-react";
 
 export default function Dashboard() {
@@ -45,9 +50,12 @@ export default function Dashboard() {
   const [userName, setUserName] = useState("");
   const [userAvatar, setUserAvatar] = useState("");
   const [copiedKey, setCopiedKey] = useState(null);
+  const [viewingOrder, setViewingOrder] = useState(null);
 
   // Calculated Metrics
-  const deliveredOrders = orders.filter((o) => o.status === "Delivered").length;
+  const deliveredOrders = orders.filter(
+    (o) => o.status === "Delivered" || o.status === "Completed",
+  ).length;
   const pendingOrders = orders.filter(
     (o) => o.status === "Pending" || o.status === "Processing",
   ).length;
@@ -171,7 +179,7 @@ export default function Dashboard() {
     setTimeout(() => setCopiedKey(null), 2500);
   };
 
-  // Safe Timestamp Formatter
+  // Format Date
   const formatDate = (timestamp) => {
     if (!timestamp) return "N/A";
     if (typeof timestamp.toDate === "function") {
@@ -195,9 +203,145 @@ export default function Dashboard() {
     });
   };
 
+  // Format Date for PDF
+  const formatDateForPDF = (timestamp) => {
+    if (!timestamp) return "N/A";
+    if (typeof timestamp.toDate === "function") {
+      return timestamp.toDate().toLocaleString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    }
+    if (timestamp.seconds) {
+      return new Date(timestamp.seconds * 1000).toLocaleString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    }
+    return new Date(timestamp).toLocaleString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  // Generate PDF Invoice
+  const generatePDF = (order) => {
+    const doc = new jsPDF();
+
+    // Header
+    doc.setFillColor(245, 158, 11);
+    doc.rect(0, 0, 210, 40, "F");
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(24);
+    doc.setFont("helvetica", "bold");
+    doc.text("BLACK HUB", 105, 25, { align: "center" });
+
+    // Invoice Title
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(14);
+    doc.text("INVOICE", 105, 45, { align: "center" });
+
+    // Order Details
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+
+    const orderId = `Order #${order.id?.slice(0, 8) || "N/A"}`;
+    const customerName = order.customerName || order.userName || "Customer";
+    const customerEmail = order.email || order.userEmail || "N/A";
+    const orderDate = formatDateForPDF(order.createdAt);
+    const paymentStatus = order.paymentStatus || "Pending";
+    const orderStatus = order.status || "Pending";
+    const totalAmount = Number(order.total || order.amountPaid || 0);
+
+    // Customer Info
+    let yPos = 60;
+    doc.setFont("helvetica", "bold");
+    doc.text("Order Information", 14, yPos);
+    yPos += 8;
+    doc.setFont("helvetica", "normal");
+    doc.text(`Order ID: ${orderId}`, 14, yPos);
+    yPos += 7;
+    doc.text(`Date: ${orderDate}`, 14, yPos);
+    yPos += 7;
+    doc.text(`Customer: ${customerName}`, 14, yPos);
+    yPos += 7;
+    doc.text(`Email: ${customerEmail}`, 14, yPos);
+    yPos += 7;
+    doc.text(`Payment Status: ${paymentStatus}`, 14, yPos);
+    yPos += 7;
+    doc.text(`Order Status: ${orderStatus}`, 14, yPos);
+    yPos += 10;
+
+    // Items Table
+    doc.setFont("helvetica", "bold");
+    doc.text("Items", 14, yPos);
+    yPos += 5;
+
+    const items = order.items || [];
+    const tableData = items.map((item) => [
+      item.title || item.name || "Product",
+      item.quantity || 1,
+      `₦${Number(item.price || 0).toLocaleString()}`,
+      `₦${Number((item.price || 0) * (item.quantity || 1)).toLocaleString()}`,
+    ]);
+
+    doc.autoTable({
+      startY: yPos,
+      head: [["Item", "Qty", "Price", "Total"]],
+      body: tableData,
+      theme: "grid",
+      headStyles: {
+        fillColor: [245, 158, 11],
+        textColor: [0, 0, 0],
+        fontStyle: "bold",
+      },
+      styles: {
+        fontSize: 9,
+        cellPadding: 3,
+      },
+      columnStyles: {
+        0: { cellWidth: 60 },
+        1: { cellWidth: 20, align: "center" },
+        2: { cellWidth: 30, align: "right" },
+        3: { cellWidth: 30, align: "right" },
+      },
+    });
+
+    // Total
+    const finalY = doc.lastAutoTable.finalY + 10;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text(`Total Amount: ₦${totalAmount.toLocaleString()}`, 105, finalY, {
+      align: "center",
+    });
+
+    // Footer
+    doc.setFontSize(8);
+    doc.setTextColor(128, 128, 128);
+    doc.text("Thank you for shopping with Black Hub!", 105, 280, {
+      align: "center",
+    });
+    doc.text("Visit us at: blackhub.io", 105, 285, { align: "center" });
+
+    // Save PDF
+    doc.save(`invoice_${order.id?.slice(0, 8) || "order"}.pdf`);
+    toast.success("Invoice downloaded successfully!");
+  };
+
   const renderStatusBadge = (status) => {
     const styles = {
       Delivered: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+      Completed: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
       Pending: "bg-amber-500/10 text-amber-400 border-amber-500/30",
       Processing: "bg-blue-500/10 text-blue-400 border-blue-500/30",
       Cancelled: "bg-rose-500/10 text-rose-400 border-rose-500/30",
@@ -489,12 +633,12 @@ export default function Dashboard() {
             </button>
 
             <button
-              onClick={handleLogout}
-              className="bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/80 rounded-2xl p-4 text-center hover:border-rose-500 hover:scale-[1.02] transition-all cursor-pointer group"
+              onClick={() => navigate("/orders")}
+              className="bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/80 rounded-2xl p-4 text-center hover:border-amber-400 hover:scale-[1.02] transition-all cursor-pointer group"
             >
-              <LogOut className="w-6 h-6 text-zinc-300 mx-auto group-hover:scale-110 group-hover:text-rose-500 transition-all" />
-              <p className="mt-2 text-xs font-bold text-zinc-300 group-hover:text-rose-500 transition">
-                Sign Out
+              <FileText className="w-6 h-6 text-zinc-300 mx-auto group-hover:scale-110 group-hover:text-amber-400 transition-all" />
+              <p className="mt-2 text-xs font-bold text-zinc-300 group-hover:text-amber-400 transition">
+                Orders
               </p>
             </button>
           </div>
@@ -542,42 +686,92 @@ export default function Dashboard() {
               {orders.slice(0, 5).map((order) => (
                 <div
                   key={order.id}
-                  className="bg-zinc-900/60 border border-zinc-800 hover:border-amber-500/30 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/5"
+                  className="bg-zinc-900/60 border border-zinc-800 hover:border-amber-500/30 rounded-2xl p-4 sm:p-5 flex flex-col gap-4 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/5"
                 >
-                  <div className="space-y-1.5 w-full md:w-auto">
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                      <span className="font-mono text-xs text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
-                        #{order.id.slice(0, 8)}
-                      </span>
-                      {renderStatusBadge(order.status)}
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div className="space-y-1.5 w-full md:w-auto">
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                        <span className="font-mono text-xs text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                          #{order.id.slice(0, 8)}
+                        </span>
+                        {renderStatusBadge(order.status)}
+                        {renderPaymentBadge(order.paymentStatus)}
+                      </div>
+                      <p className="text-sm font-semibold text-white line-clamp-1">
+                        {order.items
+                          ?.map((i) => i.title || i.name)
+                          .join(", ") ||
+                          order.productName ||
+                          "General Order"}
+                      </p>
+                      <p className="text-xs text-zinc-400 font-mono flex items-center gap-2">
+                        <Clock className="w-3 h-3" />
+                        Placed on {formatDate(order.createdAt)}
+                      </p>
                     </div>
-                    <p className="text-sm font-semibold text-white line-clamp-1">
-                      {order.items?.map((i) => i.name || i.title).join(", ") ||
-                        order.productName ||
-                        "General Order"}
-                    </p>
-                    <p className="text-xs text-zinc-400 font-mono">
-                      Placed on {formatDate(order.createdAt)}
-                    </p>
+
+                    <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+                      <div className="text-right">
+                        <p className="text-base sm:text-lg font-black text-white">
+                          ₦
+                          {Number(
+                            order.total || order.amountPaid || 0,
+                          ).toLocaleString()}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setViewingOrder(order)}
+                          className="p-2 rounded-xl bg-zinc-800/50 hover:bg-zinc-700 text-zinc-400 hover:text-amber-400 transition border border-zinc-700 hover:border-amber-500/30"
+                          title="View Order Details"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => generatePDF(order)}
+                          className="p-2 rounded-xl bg-zinc-800/50 hover:bg-zinc-700 text-zinc-400 hover:text-amber-400 transition border border-zinc-700 hover:border-amber-500/30"
+                          title="Download Invoice PDF"
+                        >
+                          <Printer className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="flex items-center gap-4 sm:gap-6 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 pt-3 md:pt-0 border-zinc-800">
-                    <div className="text-right">
-                      <p className="text-base sm:text-lg font-black text-white">
-                        ₦
-                        {Number(
-                          order.total || order.amountPaid || 0,
-                        ).toLocaleString()}
-                      </p>
-                      {renderPaymentBadge(order.paymentStatus)}
+                  {/* Order Progress Bar */}
+                  {order.status !== "Cancelled" && (
+                    <div className="mt-2 pt-2 border-t border-zinc-800/50">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-zinc-500 font-mono">
+                          Progress:
+                        </span>
+                        <div className="flex-1 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all duration-500 ${
+                              order.status === "Completed" ||
+                              order.status === "Delivered"
+                                ? "bg-emerald-500 w-full"
+                                : order.status === "Processing"
+                                  ? "bg-blue-500 w-2/3"
+                                  : order.status === "Pending"
+                                    ? "bg-amber-500 w-1/3"
+                                    : "bg-zinc-500 w-0"
+                            }`}
+                          />
+                        </div>
+                        <span className="text-[10px] text-zinc-500 font-mono">
+                          {order.status === "Completed" ||
+                          order.status === "Delivered"
+                            ? "Complete"
+                            : order.status === "Processing"
+                              ? "Processing"
+                              : order.status === "Pending"
+                                ? "Pending"
+                                : "N/A"}
+                        </span>
+                      </div>
                     </div>
-                    <button
-                      onClick={() => navigate(`/order/${order.id}`)}
-                      className="p-2 rounded-xl bg-zinc-800/50 hover:bg-zinc-700 text-zinc-400 hover:text-amber-400 transition border border-zinc-700 hover:border-amber-500/30"
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                    </button>
-                  </div>
+                  )}
                 </div>
               ))}
 
@@ -638,6 +832,118 @@ export default function Dashboard() {
           </div>
         </div>
       </main>
+
+      {/* ========================================== */}
+      {/* ORDER DETAIL MODAL                        */}
+      {/* ========================================== */}
+      {viewingOrder && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-zinc-950/95 border border-amber-500/30 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl shadow-amber-500/10">
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h2 className="text-xl font-black text-white">Order Details</h2>
+                <p className="text-xs text-zinc-400 font-mono">
+                  Order #{viewingOrder.id?.slice(0, 8)}
+                </p>
+              </div>
+              <button
+                onClick={() => setViewingOrder(null)}
+                className="p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Order Info */}
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="p-4 bg-zinc-900/50 rounded-xl border border-zinc-800">
+                <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">
+                  Status
+                </p>
+                <div className="mt-1">
+                  {renderStatusBadge(viewingOrder.status)}
+                </div>
+              </div>
+              <div className="p-4 bg-zinc-900/50 rounded-xl border border-zinc-800">
+                <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">
+                  Payment
+                </p>
+                <div className="mt-1">
+                  {renderPaymentBadge(viewingOrder.paymentStatus)}
+                </div>
+              </div>
+              <div className="p-4 bg-zinc-900/50 rounded-xl border border-zinc-800">
+                <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">
+                  Total
+                </p>
+                <p className="text-lg font-black text-amber-400 mt-1">
+                  ₦
+                  {Number(
+                    viewingOrder.total || viewingOrder.amountPaid || 0,
+                  ).toLocaleString()}
+                </p>
+              </div>
+              <div className="p-4 bg-zinc-900/50 rounded-xl border border-zinc-800">
+                <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">
+                  Date
+                </p>
+                <p className="text-xs font-mono text-white mt-1">
+                  {formatDate(viewingOrder.createdAt)}
+                </p>
+              </div>
+            </div>
+
+            {/* Items */}
+            {viewingOrder.items && viewingOrder.items.length > 0 && (
+              <div className="mb-6">
+                <h4 className="text-sm font-bold text-white mb-3">Items</h4>
+                <div className="space-y-2">
+                  {viewingOrder.items.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="flex justify-between items-center p-3 bg-zinc-900/50 rounded-xl border border-zinc-800"
+                    >
+                      <div>
+                        <p className="text-sm font-medium text-white">
+                          {item.title || item.name}
+                        </p>
+                        <p className="text-xs text-zinc-400">
+                          Qty: {item.quantity || 1}
+                        </p>
+                      </div>
+                      <p className="text-sm font-bold text-amber-400">
+                        ₦
+                        {Number(
+                          (item.price || 0) * (item.quantity || 1),
+                        ).toLocaleString()}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="flex flex-wrap gap-3 pt-4 border-t border-zinc-800/50">
+              <button
+                onClick={() => generatePDF(viewingOrder)}
+                className="flex-1 min-w-[120px] px-4 py-3 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-black font-black rounded-xl text-xs transition flex items-center justify-center gap-2"
+              >
+                <Printer className="w-4 h-4" /> Download Invoice
+              </button>
+              <button
+                onClick={() => {
+                  setViewingOrder(null);
+                  navigate("/shop");
+                }}
+                className="flex-1 min-w-[120px] px-4 py-3 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold rounded-xl text-xs transition flex items-center justify-center gap-2"
+              >
+                <ShoppingBag className="w-4 h-4" /> Shop More
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
