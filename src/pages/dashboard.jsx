@@ -53,6 +53,7 @@ import {
   X,
   Send,
   HelpCircle,
+  ArrowLeft,
 } from "lucide-react";
 
 export default function Dashboard() {
@@ -472,18 +473,20 @@ export default function Dashboard() {
     if (!delivery) return null;
 
     return (
-      <div className="mt-4 p-4 bg-zinc-900/80 border border-emerald-500/30 rounded-xl">
+      <div className="mt-4 p-3 sm:p-4 bg-zinc-900/80 border border-emerald-500/30 rounded-xl">
         <div className="flex items-center gap-2 mb-3">
           <Truck className="w-4 h-4 text-emerald-400" />
-          <h4 className="text-sm font-bold text-white">Delivery Information</h4>
-          <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+          <h4 className="text-xs sm:text-sm font-bold text-white">
+            Delivery Information
+          </h4>
+          <span className="text-[8px] sm:text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
             Delivered
           </span>
         </div>
 
         {/* Delivery Status */}
-        <div className="flex items-center gap-2 text-xs text-emerald-400 mb-3">
-          <CheckCircle2 className="w-3.5 h-3.5" />
+        <div className="flex items-center gap-2 text-[10px] sm:text-xs text-emerald-400 mb-3">
+          <CheckCircle2 className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
           <span>
             Delivered on{" "}
             {delivery.deliveredAt?.toDate?.()?.toLocaleDateString() || "N/A"}
@@ -496,9 +499,11 @@ export default function Dashboard() {
           {delivery.email && (
             <div className="flex items-center justify-between p-2 bg-zinc-950/50 rounded-lg border border-zinc-800">
               <div className="flex items-center gap-2 flex-1 min-w-0">
-                <Key className="w-3.5 h-3.5 text-amber-400" />
-                <span className="text-xs text-zinc-400 font-mono">Email:</span>
-                <span className="text-xs text-white font-mono truncate">
+                <Key className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-amber-400" />
+                <span className="text-[10px] sm:text-xs text-zinc-400 font-mono">
+                  Email:
+                </span>
+                <span className="text-[10px] sm:text-xs text-white font-mono truncate">
                   {delivery.email}
                 </span>
               </div>
@@ -507,9 +512,9 @@ export default function Dashboard() {
                 className="p-1 hover:bg-zinc-800 rounded-lg transition flex-shrink-0"
               >
                 {copiedField === "Email" ? (
-                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  <Check className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-emerald-400" />
                 ) : (
-                  <Copy className="w-3.5 h-3.5 text-zinc-400 hover:text-white" />
+                  <Copy className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-zinc-400 hover:text-white" />
                 )}
               </button>
             </div>
@@ -519,11 +524,11 @@ export default function Dashboard() {
           {delivery.password && (
             <div className="flex items-center justify-between p-2 bg-zinc-950/50 rounded-lg border border-zinc-800">
               <div className="flex items-center gap-2 flex-1 min-w-0">
-                <Key className="w-3.5 h-3.5 text-amber-400" />
-                <span className="text-xs text-zinc-400 font-mono">
+                <Key className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-amber-400" />
+                <span className="text-[10px] sm:text-xs text-zinc-400 font-mono">
                   Password:
                 </span>
-                <span className="text-xs text-white font-mono">
+                <span className="text-[10px] sm:text-xs text-white font-mono">
                   {showCreds ? delivery.password : "••••••••••••"}
                 </span>
               </div>
@@ -533,9 +538,9 @@ export default function Dashboard() {
                   className="p-1 hover:bg-zinc-800 rounded-lg transition"
                 >
                   {showCreds ? (
-                    <Eye className="w-3.5 h-3.5 text-zinc-400 hover:text-white" />
+                    <Eye className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-zinc-400 hover:text-white" />
                   ) : (
-                    <Eye className="w-3.5 h-3.5 text-zinc-400 hover:text-white" />
+                    <Eye className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-zinc-400 hover:text-white" />
                   )}
                 </button>
                 <button
@@ -543,9 +548,9 @@ export default function Dashboard() {
                   className="p-1 hover:bg-zinc-800 rounded-lg transition"
                 >
                   {copiedField === "Password" ? (
-                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <Check className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-emerald-400" />
                   ) : (
-                    <Copy className="w-3.5 h-3.5 text-zinc-400 hover:text-white" />
+                    <Copy className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-zinc-400 hover:text-white" />
                   )}
                 </button>
               </div>
@@ -556,11 +561,11 @@ export default function Dashboard() {
           {delivery.licenseKey && (
             <div className="flex items-center justify-between p-2 bg-zinc-950/50 rounded-lg border border-zinc-800">
               <div className="flex items-center gap-2 flex-1 min-w-0">
-                <Key className="w-3.5 h-3.5 text-amber-400" />
-                <span className="text-xs text-zinc-400 font-mono">
+                <Key className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-amber-400" />
+                <span className="text-[10px] sm:text-xs text-zinc-400 font-mono">
                   License Key:
                 </span>
-                <span className="text-xs text-amber-400 font-mono font-bold">
+                <span className="text-[10px] sm:text-xs text-amber-400 font-mono font-bold">
                   {showCreds ? delivery.licenseKey : "••••-••••-••••-••••"}
                 </span>
               </div>
@@ -570,9 +575,9 @@ export default function Dashboard() {
                   className="p-1 hover:bg-zinc-800 rounded-lg transition"
                 >
                   {showCreds ? (
-                    <Eye className="w-3.5 h-3.5 text-zinc-400 hover:text-white" />
+                    <Eye className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-zinc-400 hover:text-white" />
                   ) : (
-                    <Eye className="w-3.5 h-3.5 text-zinc-400 hover:text-white" />
+                    <Eye className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-zinc-400 hover:text-white" />
                   )}
                 </button>
                 <button
@@ -580,9 +585,9 @@ export default function Dashboard() {
                   className="p-1 hover:bg-zinc-800 rounded-lg transition"
                 >
                   {copiedField === "License Key" ? (
-                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <Check className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-emerald-400" />
                   ) : (
-                    <Copy className="w-3.5 h-3.5 text-zinc-400 hover:text-white" />
+                    <Copy className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-zinc-400 hover:text-white" />
                   )}
                 </button>
               </div>
@@ -593,15 +598,15 @@ export default function Dashboard() {
           {delivery.downloadLink && (
             <div className="flex items-center justify-between p-2 bg-zinc-950/50 rounded-lg border border-zinc-800">
               <div className="flex items-center gap-2 flex-1 min-w-0">
-                <Download className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-xs text-zinc-400 font-mono">
+                <Download className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-emerald-400" />
+                <span className="text-[10px] sm:text-xs text-zinc-400 font-mono">
                   Download:
                 </span>
                 <a
                   href={delivery.downloadLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-amber-400 hover:text-amber-300 truncate max-w-[150px] sm:max-w-[200px]"
+                  className="text-[10px] sm:text-xs text-amber-400 hover:text-amber-300 truncate max-w-[100px] sm:max-w-[200px]"
                 >
                   {delivery.downloadLink.length > 30
                     ? `${delivery.downloadLink.substring(0, 30)}...`
@@ -612,7 +617,7 @@ export default function Dashboard() {
                 onClick={() => window.open(delivery.downloadLink, "_blank")}
                 className="p-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg transition flex-shrink-0"
               >
-                <ExternalLink className="w-3.5 h-3.5 text-emerald-400" />
+                <ExternalLink className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-emerald-400" />
               </button>
             </div>
           )}
@@ -620,9 +625,11 @@ export default function Dashboard() {
           {/* Expiry Date */}
           {delivery.expiryDate && (
             <div className="flex items-center gap-2 p-2 bg-zinc-950/50 rounded-lg border border-zinc-800">
-              <Clock className="w-3.5 h-3.5 text-amber-400" />
-              <span className="text-xs text-zinc-400 font-mono">Expires:</span>
-              <span className="text-xs text-white font-mono">
+              <Clock className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-amber-400" />
+              <span className="text-[10px] sm:text-xs text-zinc-400 font-mono">
+                Expires:
+              </span>
+              <span className="text-[10px] sm:text-xs text-white font-mono">
                 {new Date(delivery.expiryDate).toLocaleDateString()}
               </span>
             </div>
@@ -631,7 +638,7 @@ export default function Dashboard() {
           {/* Notes */}
           {delivery.notes && (
             <div className="p-2 bg-amber-500/5 rounded-lg border border-amber-500/20">
-              <p className="text-xs text-zinc-400 font-mono">
+              <p className="text-[10px] sm:text-xs text-zinc-400 font-mono">
                 <span className="font-bold text-amber-400">📝 Note:</span>{" "}
                 {delivery.notes}
               </p>
@@ -652,7 +659,7 @@ export default function Dashboard() {
     };
     return (
       <span
-        className={`px-3 py-1 text-xs rounded-full font-mono font-bold tracking-wider uppercase border ${
+        className={`px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs rounded-full font-mono font-bold tracking-wider uppercase border ${
           styles[status] || styles.Pending
         }`}
       >
@@ -665,23 +672,23 @@ export default function Dashboard() {
     const status = paymentStatus || "Pending";
     if (status === "Paid" || status === "success") {
       return (
-        <span className="inline-flex items-center gap-1.5 text-emerald-400 font-medium text-xs">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span className="inline-flex items-center gap-1 sm:gap-1.5 text-emerald-400 font-medium text-[10px] sm:text-xs">
+          <span className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           Paid
         </span>
       );
     }
     if (status === "Failed") {
       return (
-        <span className="inline-flex items-center gap-1.5 text-rose-400 font-medium text-xs">
-          <span className="w-2 h-2 rounded-full bg-rose-400"></span>
+        <span className="inline-flex items-center gap-1 sm:gap-1.5 text-rose-400 font-medium text-[10px] sm:text-xs">
+          <span className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-rose-400"></span>
           Failed
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center gap-1.5 text-amber-400 font-medium text-xs">
-        <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+      <span className="inline-flex items-center gap-1 sm:gap-1.5 text-amber-400 font-medium text-[10px] sm:text-xs">
+        <span className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-amber-400"></span>
         Pending
       </span>
     );
@@ -689,9 +696,9 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#050507] text-white flex flex-col justify-center items-center gap-4">
-        <div className="w-12 h-12 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-sm font-mono tracking-widest text-zinc-400 uppercase animate-pulse">
+      <div className="min-h-screen bg-[#050507] text-white flex flex-col justify-center items-center gap-4 p-4">
+        <div className="w-10 sm:w-12 h-10 sm:h-12 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-xs sm:text-sm font-mono tracking-widest text-zinc-400 uppercase animate-pulse text-center">
           Synchronizing Terminal Matrix...
         </p>
       </div>
@@ -702,22 +709,24 @@ export default function Dashboard() {
     <div className="min-h-screen bg-[#050507] text-white selection:bg-yellow-400 selection:text-black antialiased relative overflow-hidden">
       {/* Aurora Background Effect */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute w-[800px] h-[600px] bg-amber-500/10 blur-[150px] rounded-full -top-48 -right-32 animate-pulse" />
-        <div className="absolute w-[600px] h-[600px] bg-yellow-500/10 blur-[120px] rounded-full -bottom-48 -left-32 animate-pulse delay-1000" />
-        <div className="absolute w-[400px] h-[400px] bg-purple-500/10 blur-[100px] rounded-full top-1/2 left-1/2 -translate-x-1/2 animate-pulse delay-2000" />
+        <div className="absolute w-[600px] sm:w-[800px] h-[400px] sm:h-[600px] bg-amber-500/10 blur-[150px] rounded-full -top-48 -right-32 animate-pulse" />
+        <div className="absolute w-[500px] sm:w-[600px] h-[400px] sm:h-[600px] bg-yellow-500/10 blur-[120px] rounded-full -bottom-48 -left-32 animate-pulse delay-1000" />
+        <div className="absolute w-[300px] sm:w-[400px] h-[300px] sm:h-[400px] bg-purple-500/10 blur-[100px] rounded-full top-1/2 left-1/2 -translate-x-1/2 animate-pulse delay-2000" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#141417_1px,transparent_1px),linear-gradient(to_bottom,#141417_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20" />
       </div>
 
       {/* Floating Status Indicator */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <div className="bg-zinc-900/90 backdrop-blur-xl border border-amber-500/30 rounded-2xl px-4 sm:px-6 py-3 shadow-2xl shadow-amber-500/10 flex items-center gap-3">
+      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
+        <div className="bg-zinc-900/90 backdrop-blur-xl border border-amber-500/30 rounded-2xl px-3 sm:px-4 md:px-6 py-2 sm:py-3 shadow-2xl shadow-amber-500/10 flex items-center gap-2 sm:gap-3">
           <div className="relative">
-            <div className="w-3 h-3 rounded-full bg-emerald-400"></div>
-            <div className="absolute inset-0 w-3 h-3 rounded-full bg-emerald-400 animate-ping opacity-75"></div>
+            <div className="w-2 sm:w-3 h-2 sm:h-3 rounded-full bg-emerald-400"></div>
+            <div className="absolute inset-0 w-2 sm:w-3 h-2 sm:h-3 rounded-full bg-emerald-400 animate-ping opacity-75"></div>
           </div>
-          <div className="hidden sm:block">
-            <p className="text-xs font-bold text-white">System Online</p>
-            <p className="text-[8px] text-zinc-400 font-mono">
+          <div className="hidden xs:block">
+            <p className="text-[10px] sm:text-xs font-bold text-white">
+              System Online
+            </p>
+            <p className="text-[6px] sm:text-[8px] text-zinc-400 font-mono">
               Secure Node Connected
             </p>
           </div>
@@ -727,30 +736,37 @@ export default function Dashboard() {
       {/* ========================================== */}
       {/* PREMIUM NAVIGATION HEADER                  */}
       {/* ========================================== */}
-      <header className="sticky top-0 z-40 bg-[#050507]/90 backdrop-blur-2xl border-b border-amber-500/20 px-4 sm:px-6 lg:px-12 h-16 sm:h-20 flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 flex items-center justify-center font-black text-black tracking-tighter text-sm shadow-lg shadow-amber-400/20">
+      <header className="sticky top-0 z-40 bg-[#050507]/90 backdrop-blur-2xl border-b border-amber-500/20 px-3 sm:px-4 md:px-6 lg:px-12 h-14 sm:h-16 md:h-20 flex justify-between items-center">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="w-7 sm:w-8 md:w-9 h-7 sm:h-8 md:h-9 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 flex items-center justify-center font-black text-black tracking-tighter text-[10px] sm:text-xs md:text-sm shadow-lg shadow-amber-400/20">
             BH
           </div>
           <div>
-            <h2 className="text-sm font-black tracking-wide uppercase bg-gradient-to-r from-white to-amber-200 bg-clip-text text-transparent">
+            <h2 className="text-[10px] sm:text-xs md:text-sm font-black tracking-wide uppercase bg-gradient-to-r from-white to-amber-200 bg-clip-text text-transparent">
               Black Hub
             </h2>
-            <p className="text-[8px] font-mono tracking-widest text-amber-400/60 uppercase">
+            <p className="text-[6px] sm:text-[7px] md:text-[8px] font-mono tracking-widest text-amber-400/60 uppercase">
               Client Access Terminal
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <span className="hidden sm:inline text-xs font-mono text-zinc-400 border border-zinc-800 rounded-xl px-3 py-1.5 bg-black/40 truncate max-w-[150px]">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <button
+            onClick={() => navigate("/")}
+            className="flex items-center gap-1 sm:gap-2 text-[8px] sm:text-[10px] md:text-xs font-mono text-zinc-400 hover:text-amber-400 transition bg-zinc-900/80 border border-zinc-800 hover:border-amber-500/30 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl"
+          >
+            <ArrowLeft className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
+            <span className="hidden xs:inline">Home</span>
+          </button>
+          <span className="hidden sm:inline text-[8px] sm:text-[10px] md:text-xs font-mono text-zinc-400 border border-zinc-800 rounded-xl px-2 sm:px-3 py-1 sm:py-1.5 bg-black/40 truncate max-w-[80px] sm:max-w-[150px]">
             {userEmail}
           </span>
           <button
             onClick={handleLogout}
-            className="text-xs bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 hover:border-rose-500/30 px-3 sm:px-4 py-2 rounded-xl font-bold transition duration-200 cursor-pointer flex items-center gap-2 text-rose-400 hover:text-rose-300"
+            className="text-[8px] sm:text-[10px] md:text-xs bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 hover:border-rose-500/30 px-2 sm:px-3 py-1 sm:py-1.5 md:py-2 rounded-xl font-bold transition duration-200 cursor-pointer flex items-center gap-1 sm:gap-2 text-rose-400 hover:text-rose-300"
           >
-            <LogOut className="w-3.5 h-3.5" />
+            <LogOut className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
             <span className="hidden sm:inline">Sign Out</span>
           </button>
         </div>
@@ -759,17 +775,17 @@ export default function Dashboard() {
       {/* ========================================== */}
       {/* PRIMARY DASHBOARD BODY                    */}
       {/* ========================================== */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-6 sm:py-10 space-y-6 sm:space-y-10 relative z-10">
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-12 py-4 sm:py-6 md:py-8 lg:py-10 space-y-4 sm:space-y-6 md:space-y-8 lg:space-y-10 relative z-10">
         {/* ========================================== */}
         {/* PREMIUM PROFILE BANNER                    */}
         {/* ========================================== */}
-        <div className="relative space-y-6">
-          <div className="rounded-[35px] overflow-hidden bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-400 p-[2px] shadow-2xl shadow-amber-500/20">
-            <div className="bg-[#050507] rounded-[33px] p-6 sm:p-8 md:p-10 pb-12 md:pb-16">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <div className="flex items-center gap-4 sm:gap-6">
+        <div className="relative space-y-4 sm:space-y-6">
+          <div className="rounded-[25px] sm:rounded-[30px] lg:rounded-[35px] overflow-hidden bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-400 p-[1.5px] sm:p-[2px] shadow-2xl shadow-amber-500/20">
+            <div className="bg-[#050507] rounded-[24px] sm:rounded-[29px] lg:rounded-[33px] p-4 sm:p-6 md:p-8 lg:p-10 pb-8 sm:pb-10 md:pb-12 lg:pb-16">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6">
+                <div className="flex items-center gap-3 sm:gap-4 md:gap-6">
                   <div className="relative">
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-28 md:h-28 rounded-full overflow-hidden bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center text-2xl sm:text-3xl md:text-5xl font-black text-black shrink-0 shadow-xl shadow-amber-500/20 border-2 border-amber-400/30">
+                    <div className="w-12 sm:w-16 md:w-20 lg:w-28 h-12 sm:h-16 md:h-20 lg:h-28 rounded-full overflow-hidden bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center text-xl sm:text-2xl md:text-3xl lg:text-5xl font-black text-black shrink-0 shadow-xl shadow-amber-500/20 border-2 border-amber-400/30">
                       {userAvatar ? (
                         <img
                           src={userAvatar}
@@ -783,20 +799,20 @@ export default function Dashboard() {
                         </span>
                       )}
                     </div>
-                    <div className="absolute -bottom-1 -right-1 bg-emerald-400 rounded-full p-1 border-2 border-black">
-                      <BadgeCheck className="w-3 h-3 sm:w-4 sm:h-4 text-black" />
+                    <div className="absolute -bottom-0.5 sm:-bottom-1 -right-0.5 sm:-right-1 bg-emerald-400 rounded-full p-0.5 sm:p-1 border-2 border-black">
+                      <BadgeCheck className="w-2 sm:w-3 md:w-4 h-2 sm:h-3 md:h-4 text-black" />
                     </div>
                   </div>
                   <div>
-                    <h2 className="text-xl sm:text-2xl md:text-4xl font-black text-white capitalize">
+                    <h2 className="text-base sm:text-xl md:text-2xl lg:text-4xl font-black text-white capitalize">
                       {userName}
                     </h2>
-                    <p className="text-zinc-400 mt-0.5 sm:mt-1 text-xs sm:text-sm md:text-base font-mono">
+                    <p className="text-[10px] sm:text-xs md:text-sm lg:text-base text-zinc-400 mt-0.5 font-mono truncate max-w-[150px] sm:max-w-[200px] md:max-w-none">
                       {userEmail}
                     </p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Crown className="w-3 h-3 text-amber-400" />
-                      <span className="text-[10px] text-amber-400 font-bold uppercase">
+                    <div className="flex items-center gap-1 sm:gap-2 mt-0.5 sm:mt-1">
+                      <Crown className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-amber-400" />
+                      <span className="text-[8px] sm:text-[10px] text-amber-400 font-bold uppercase">
                         Premium Member
                       </span>
                     </div>
@@ -804,73 +820,73 @@ export default function Dashboard() {
                 </div>
                 <button
                   onClick={() => navigate("/profile")}
-                  className="w-full md:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-black font-black transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 shadow-xl shadow-amber-400/20 text-sm"
+                  className="w-full sm:w-auto px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-black font-black transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 shadow-xl shadow-amber-400/20 text-[10px] sm:text-xs md:text-sm"
                 >
                   <span>Manage Account</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-3 sm:w-4 h-3 sm:h-4" />
                 </button>
               </div>
             </div>
           </div>
 
           {/* Floating Analytics Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 -mt-8 sm:-mt-10 px-3 sm:px-4 md:px-6 relative z-20">
-            <div className="backdrop-blur-xl bg-zinc-950/90 border border-amber-500/20 rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-2xl shadow-amber-500/5 hover:border-amber-500/40 transition-all group">
-              <div className="flex items-center gap-2 mb-1">
-                <Package className="w-3 h-3 text-amber-400" />
-                <h3 className="text-[10px] text-zinc-500 uppercase font-mono tracking-wider">
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4 -mt-6 sm:-mt-8 md:-mt-10 px-2 sm:px-3 md:px-4 lg:px-6 relative z-20">
+            <div className="backdrop-blur-xl bg-zinc-950/90 border border-amber-500/20 rounded-2xl p-3 sm:p-4 md:p-5 shadow-2xl shadow-amber-500/5 hover:border-amber-500/40 transition-all group">
+              <div className="flex items-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
+                <Package className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-amber-400" />
+                <h3 className="text-[8px] sm:text-[10px] text-zinc-500 uppercase font-mono tracking-wider">
                   Total Orders
                 </h3>
               </div>
-              <p className="text-2xl sm:text-3xl md:text-4xl font-black text-white group-hover:text-amber-400 transition">
+              <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-black text-white group-hover:text-amber-400 transition">
                 {orders.length}
               </p>
             </div>
 
-            <div className="backdrop-blur-xl bg-zinc-950/90 border border-emerald-500/20 rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-2xl shadow-emerald-500/5 hover:border-emerald-500/40 transition-all group">
-              <div className="flex items-center gap-2 mb-1">
-                <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                <h3 className="text-[10px] text-zinc-500 uppercase font-mono tracking-wider">
+            <div className="backdrop-blur-xl bg-zinc-950/90 border border-emerald-500/20 rounded-2xl p-3 sm:p-4 md:p-5 shadow-2xl shadow-emerald-500/5 hover:border-emerald-500/40 transition-all group">
+              <div className="flex items-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
+                <CheckCircle2 className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-emerald-400" />
+                <h3 className="text-[8px] sm:text-[10px] text-zinc-500 uppercase font-mono tracking-wider">
                   Completed
                 </h3>
               </div>
-              <p className="text-2xl sm:text-3xl md:text-4xl font-black text-emerald-400 group-hover:scale-105 transition">
+              <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-black text-emerald-400 group-hover:scale-105 transition">
                 {deliveredOrders}
               </p>
             </div>
 
-            <div className="backdrop-blur-xl bg-zinc-950/90 border border-amber-500/20 rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-2xl shadow-amber-500/5 hover:border-amber-500/40 transition-all group">
-              <div className="flex items-center gap-2 mb-1">
-                <Clock className="w-3 h-3 text-amber-400" />
-                <h3 className="text-[10px] text-zinc-500 uppercase font-mono tracking-wider">
+            <div className="backdrop-blur-xl bg-zinc-950/90 border border-amber-500/20 rounded-2xl p-3 sm:p-4 md:p-5 shadow-2xl shadow-amber-500/5 hover:border-amber-500/40 transition-all group">
+              <div className="flex items-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
+                <Clock className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-amber-400" />
+                <h3 className="text-[8px] sm:text-[10px] text-zinc-500 uppercase font-mono tracking-wider">
                   Pending
                 </h3>
               </div>
-              <p className="text-2xl sm:text-3xl md:text-4xl font-black text-amber-400 group-hover:scale-105 transition">
+              <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-black text-amber-400 group-hover:scale-105 transition">
                 {pendingOrders}
               </p>
             </div>
 
-            <div className="backdrop-blur-xl bg-zinc-950/90 border border-rose-500/20 rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-2xl shadow-rose-500/5 hover:border-rose-500/40 transition-all group">
-              <div className="flex items-center gap-2 mb-1">
-                <Heart className="w-3 h-3 text-rose-400" />
-                <h3 className="text-[10px] text-zinc-500 uppercase font-mono tracking-wider">
+            <div className="backdrop-blur-xl bg-zinc-950/90 border border-rose-500/20 rounded-2xl p-3 sm:p-4 md:p-5 shadow-2xl shadow-rose-500/5 hover:border-rose-500/40 transition-all group">
+              <div className="flex items-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
+                <Heart className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-rose-400" />
+                <h3 className="text-[8px] sm:text-[10px] text-zinc-500 uppercase font-mono tracking-wider">
                   Wishlist
                 </h3>
               </div>
-              <p className="text-2xl sm:text-3xl md:text-4xl font-black text-rose-400 group-hover:scale-105 transition">
+              <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-black text-rose-400 group-hover:scale-105 transition">
                 {wishlistCount}
               </p>
             </div>
 
-            <div className="backdrop-blur-xl bg-zinc-950/90 border border-cyan-500/20 rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-2xl shadow-cyan-500/5 hover:border-cyan-500/40 transition-all group col-span-2 lg:col-span-1">
-              <div className="flex items-center gap-2 mb-1">
-                <Wallet className="w-3 h-3 text-cyan-400" />
-                <h3 className="text-[10px] text-zinc-500 uppercase font-mono tracking-wider">
+            <div className="backdrop-blur-xl bg-zinc-950/90 border border-cyan-500/20 rounded-2xl p-3 sm:p-4 md:p-5 shadow-2xl shadow-cyan-500/5 hover:border-cyan-500/40 transition-all group col-span-2 lg:col-span-1">
+              <div className="flex items-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
+                <Wallet className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-cyan-400" />
+                <h3 className="text-[8px] sm:text-[10px] text-zinc-500 uppercase font-mono tracking-wider">
                   Total Spent
                 </h3>
               </div>
-              <p className="text-lg sm:text-xl md:text-2xl font-black text-cyan-400 group-hover:scale-105 transition truncate">
+              <p className="text-sm sm:text-lg md:text-xl lg:text-2xl font-black text-cyan-400 group-hover:scale-105 transition truncate">
                 ₦{totalSpent.toLocaleString()}
               </p>
             </div>
@@ -880,69 +896,71 @@ export default function Dashboard() {
         {/* ========================================== */}
         {/* QUICK NAVIGATION ACTIONS                   */}
         {/* ========================================== */}
-        <div className="bg-zinc-950/60 border border-zinc-800/80 hover:border-amber-500/30 rounded-3xl p-6 backdrop-blur-sm transition-all duration-300 shadow-xl shadow-amber-500/5">
-          <div className="flex items-center gap-2 mb-4">
-            <Zap className="w-4 h-4 text-amber-400" />
-            <h2 className="text-lg font-black text-white">Quick Actions</h2>
+        <div className="bg-zinc-950/60 border border-zinc-800/80 hover:border-amber-500/30 rounded-2xl sm:rounded-3xl p-4 sm:p-5 md:p-6 backdrop-blur-sm transition-all duration-300 shadow-xl shadow-amber-500/5">
+          <div className="flex items-center gap-1.5 sm:gap-2 mb-3 sm:mb-4">
+            <Zap className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-amber-400" />
+            <h2 className="text-sm sm:text-base md:text-lg font-black text-white">
+              Quick Actions
+            </h2>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
             <button
               onClick={() => navigate("/shop")}
-              className="bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/80 rounded-2xl p-4 text-center hover:border-amber-400 hover:scale-[1.02] transition-all cursor-pointer group"
+              className="bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/80 rounded-2xl p-3 sm:p-4 text-center hover:border-amber-400 hover:scale-[1.02] transition-all cursor-pointer group"
             >
-              <ShoppingCart className="w-6 h-6 text-zinc-300 mx-auto group-hover:scale-110 group-hover:text-amber-400 transition-all" />
-              <p className="mt-2 text-xs font-bold text-zinc-300 group-hover:text-amber-400 transition">
+              <ShoppingCart className="w-4 sm:w-5 md:w-6 h-4 sm:h-5 md:h-6 text-zinc-300 mx-auto group-hover:scale-110 group-hover:text-amber-400 transition-all" />
+              <p className="mt-1 sm:mt-2 text-[8px] sm:text-[10px] md:text-xs font-bold text-zinc-300 group-hover:text-amber-400 transition">
                 Shop
               </p>
             </button>
 
             <button
               onClick={() => navigate("/wishlist")}
-              className="bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/80 rounded-2xl p-4 text-center hover:border-rose-400 hover:scale-[1.02] transition-all cursor-pointer group"
+              className="bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/80 rounded-2xl p-3 sm:p-4 text-center hover:border-rose-400 hover:scale-[1.02] transition-all cursor-pointer group"
             >
-              <Heart className="w-6 h-6 text-zinc-300 mx-auto group-hover:scale-110 group-hover:text-rose-400 transition-all" />
-              <p className="mt-2 text-xs font-bold text-zinc-300 group-hover:text-rose-400 transition">
+              <Heart className="w-4 sm:w-5 md:w-6 h-4 sm:h-5 md:h-6 text-zinc-300 mx-auto group-hover:scale-110 group-hover:text-rose-400 transition-all" />
+              <p className="mt-1 sm:mt-2 text-[8px] sm:text-[10px] md:text-xs font-bold text-zinc-300 group-hover:text-rose-400 transition">
                 Wishlist
               </p>
             </button>
 
             <button
               onClick={() => navigate("/cart")}
-              className="bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/80 rounded-2xl p-4 text-center hover:border-blue-400 hover:scale-[1.02] transition-all cursor-pointer group"
+              className="bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/80 rounded-2xl p-3 sm:p-4 text-center hover:border-blue-400 hover:scale-[1.02] transition-all cursor-pointer group"
             >
-              <ShoppingBag className="w-6 h-6 text-zinc-300 mx-auto group-hover:scale-110 group-hover:text-blue-400 transition-all" />
-              <p className="mt-2 text-xs font-bold text-zinc-300 group-hover:text-blue-400 transition">
+              <ShoppingBag className="w-4 sm:w-5 md:w-6 h-4 sm:h-5 md:h-6 text-zinc-300 mx-auto group-hover:scale-110 group-hover:text-blue-400 transition-all" />
+              <p className="mt-1 sm:mt-2 text-[8px] sm:text-[10px] md:text-xs font-bold text-zinc-300 group-hover:text-blue-400 transition">
                 Cart
               </p>
             </button>
 
             <button
-              onClick={() => navigate("/downloads")}
-              className="bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/80 rounded-2xl p-4 text-center hover:border-emerald-400 hover:scale-[1.02] transition-all cursor-pointer group"
-            >
-              <Download className="w-6 h-6 text-zinc-300 mx-auto group-hover:scale-110 group-hover:text-emerald-400 transition-all" />
-              <p className="mt-2 text-xs font-bold text-zinc-300 group-hover:text-emerald-400 transition">
-                Downloads
-              </p>
-            </button>
-
-            <button
               onClick={() => navigate("/profile")}
-              className="bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/80 rounded-2xl p-4 text-center hover:border-purple-400 hover:scale-[1.02] transition-all cursor-pointer group"
+              className="bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/80 rounded-2xl p-3 sm:p-4 text-center hover:border-purple-400 hover:scale-[1.02] transition-all cursor-pointer group"
             >
-              <User className="w-6 h-6 text-zinc-300 mx-auto group-hover:scale-110 group-hover:text-purple-400 transition-all" />
-              <p className="mt-2 text-xs font-bold text-zinc-300 group-hover:text-purple-400 transition">
+              <User className="w-4 sm:w-5 md:w-6 h-4 sm:h-5 md:h-6 text-zinc-300 mx-auto group-hover:scale-110 group-hover:text-purple-400 transition-all" />
+              <p className="mt-1 sm:mt-2 text-[8px] sm:text-[10px] md:text-xs font-bold text-zinc-300 group-hover:text-purple-400 transition">
                 Profile
               </p>
             </button>
 
             <button
               onClick={() => navigate("/orders")}
-              className="bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/80 rounded-2xl p-4 text-center hover:border-amber-400 hover:scale-[1.02] transition-all cursor-pointer group"
+              className="bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/80 rounded-2xl p-3 sm:p-4 text-center hover:border-amber-400 hover:scale-[1.02] transition-all cursor-pointer group"
             >
-              <FileText className="w-6 h-6 text-zinc-300 mx-auto group-hover:scale-110 group-hover:text-amber-400 transition-all" />
-              <p className="mt-2 text-xs font-bold text-zinc-300 group-hover:text-amber-400 transition">
+              <FileText className="w-4 sm:w-5 md:w-6 h-4 sm:h-5 md:h-6 text-zinc-300 mx-auto group-hover:scale-110 group-hover:text-amber-400 transition-all" />
+              <p className="mt-1 sm:mt-2 text-[8px] sm:text-[10px] md:text-xs font-bold text-zinc-300 group-hover:text-amber-400 transition">
                 Orders
+              </p>
+            </button>
+
+            <button
+              onClick={() => navigate("/")}
+              className="bg-gradient-to-br from-zinc-900 to-black border border-zinc-800/80 rounded-2xl p-3 sm:p-4 text-center hover:border-emerald-400 hover:scale-[1.02] transition-all cursor-pointer group"
+            >
+              <Home className="w-4 sm:w-5 md:w-6 h-4 sm:h-5 md:h-6 text-zinc-300 mx-auto group-hover:scale-110 group-hover:text-emerald-400 transition-all" />
+              <p className="mt-1 sm:mt-2 text-[8px] sm:text-[10px] md:text-xs font-bold text-zinc-300 group-hover:text-emerald-400 transition">
+                Home
               </p>
             </button>
           </div>
@@ -951,36 +969,38 @@ export default function Dashboard() {
         {/* ========================================== */}
         {/* ORDERS SECTION                            */}
         {/* ========================================== */}
-        <div className="bg-zinc-950/60 border border-zinc-800/80 hover:border-amber-500/30 rounded-3xl p-6 md:p-8 backdrop-blur-sm space-y-6 transition-all duration-300 shadow-xl shadow-amber-500/5">
-          <div className="flex justify-between items-center flex-wrap gap-4">
+        <div className="bg-zinc-950/60 border border-zinc-800/80 hover:border-amber-500/30 rounded-2xl sm:rounded-3xl p-4 sm:p-5 md:p-6 lg:p-8 backdrop-blur-sm space-y-4 sm:space-y-6 transition-all duration-300 shadow-xl shadow-amber-500/5">
+          <div className="flex justify-between items-center flex-wrap gap-3 sm:gap-4">
             <div>
-              <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-amber-400" />
-                <h2 className="text-xl font-black text-white">Order History</h2>
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <FileText className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-amber-400" />
+                <h2 className="text-base sm:text-lg md:text-xl font-black text-white">
+                  Order History
+                </h2>
               </div>
-              <p className="text-xs text-zinc-400 font-mono mt-0.5">
+              <p className="text-[8px] sm:text-[10px] md:text-xs text-zinc-400 font-mono mt-0.5">
                 Real-time tracking of your purchases and software keys.
               </p>
             </div>
             {orders.length > 0 && (
-              <span className="text-[10px] text-zinc-500 bg-zinc-900/50 px-3 py-1 rounded-full border border-zinc-800">
+              <span className="text-[8px] sm:text-[10px] text-zinc-500 bg-zinc-900/50 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full border border-zinc-800">
                 {orders.length} {orders.length === 1 ? "Order" : "Orders"}
               </span>
             )}
           </div>
 
           {orders.length === 0 ? (
-            <div className="text-center py-12 sm:py-16 border border-dashed border-zinc-800 rounded-2xl">
-              <Package className="w-12 h-12 text-zinc-600 mx-auto mb-3" />
-              <p className="text-zinc-400 font-medium text-sm">
+            <div className="text-center py-10 sm:py-12 md:py-16 border border-dashed border-zinc-800 rounded-2xl">
+              <Package className="w-10 sm:w-12 h-10 sm:h-12 text-zinc-600 mx-auto mb-3" />
+              <p className="text-sm sm:text-base font-medium text-zinc-400">
                 No orders recorded yet.
               </p>
-              <p className="text-xs text-zinc-500 mt-1">
+              <p className="text-[10px] sm:text-xs text-zinc-500 mt-1">
                 Start shopping to see your orders here.
               </p>
               <button
                 onClick={() => navigate("/shop")}
-                className="mt-4 px-6 py-2.5 bg-gradient-to-r from-amber-400 to-yellow-400 text-black font-black text-xs rounded-xl hover:from-amber-300 hover:to-yellow-300 transition shadow-lg shadow-amber-400/20 cursor-pointer"
+                className="mt-4 px-4 sm:px-6 py-2 sm:py-2.5 bg-gradient-to-r from-amber-400 to-yellow-400 text-black font-black text-[10px] sm:text-xs rounded-xl hover:from-amber-300 hover:to-yellow-300 transition shadow-lg shadow-amber-400/20 cursor-pointer"
               >
                 Browse Store
               </button>
@@ -990,67 +1010,67 @@ export default function Dashboard() {
               {orders.slice(0, 5).map((order) => (
                 <div
                   key={order.id}
-                  className="bg-zinc-900/60 border border-zinc-800 hover:border-amber-500/30 rounded-2xl p-4 sm:p-5 flex flex-col gap-4 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/5"
+                  className="bg-zinc-900/60 border border-zinc-800 hover:border-amber-500/30 rounded-2xl p-3 sm:p-4 md:p-5 flex flex-col gap-3 sm:gap-4 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/5"
                 >
-                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div className="space-y-1.5 w-full md:w-auto">
-                      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                        <span className="font-mono text-xs text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+                    <div className="space-y-1.5 w-full sm:w-auto">
+                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                        <span className="font-mono text-[8px] sm:text-[10px] md:text-xs text-amber-400 font-bold bg-amber-500/10 px-1.5 sm:px-2 py-0.5 rounded border border-amber-500/20">
                           #{order.id.slice(0, 8)}
                         </span>
                         {renderStatusBadge(order.status)}
                         {renderPaymentBadge(order.paymentStatus)}
                       </div>
-                      <p className="text-sm font-semibold text-white line-clamp-1">
+                      <p className="text-xs sm:text-sm font-semibold text-white line-clamp-1">
                         {order.items
                           ?.map((i) => i.title || i.name)
                           .join(", ") ||
                           order.productName ||
                           "General Order"}
                       </p>
-                      <p className="text-xs text-zinc-400 font-mono flex items-center gap-2">
-                        <Clock className="w-3 h-3" />
+                      <p className="text-[8px] sm:text-[10px] md:text-xs text-zinc-400 font-mono flex items-center gap-1.5 sm:gap-2">
+                        <Clock className="w-2.5 sm:w-3 h-2.5 sm:h-3" />
                         Placed on {formatDate(order.createdAt)}
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+                    <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-between sm:justify-end">
                       <div className="text-right">
-                        <p className="text-base sm:text-lg font-black text-white">
+                        <p className="text-sm sm:text-base md:text-lg font-black text-white">
                           ₦
                           {Number(
                             order.total || order.amountPaid || 0,
                           ).toLocaleString()}
                         </p>
                       </div>
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1 sm:gap-1.5">
                         <button
                           onClick={() => setViewingOrder(order)}
-                          className="p-2 rounded-xl bg-zinc-800/50 hover:bg-zinc-700 text-zinc-400 hover:text-amber-400 transition border border-zinc-700 hover:border-amber-500/30"
+                          className="p-1.5 sm:p-2 rounded-xl bg-zinc-800/50 hover:bg-zinc-700 text-zinc-400 hover:text-amber-400 transition border border-zinc-700 hover:border-amber-500/30"
                           title="View Order Details"
                         >
-                          <Eye className="w-4 h-4" />
+                          <Eye className="w-3 sm:w-4 h-3 sm:h-4" />
                         </button>
                         <button
                           onClick={() => generatePDF(order)}
-                          className="p-2 rounded-xl bg-zinc-800/50 hover:bg-zinc-700 text-zinc-400 hover:text-amber-400 transition border border-zinc-700 hover:border-amber-500/30"
+                          className="p-1.5 sm:p-2 rounded-xl bg-zinc-800/50 hover:bg-zinc-700 text-zinc-400 hover:text-amber-400 transition border border-zinc-700 hover:border-amber-500/30"
                           title="Download Invoice PDF"
                         >
-                          <Printer className="w-4 h-4" />
+                          <Printer className="w-3 sm:w-4 h-3 sm:h-4" />
                         </button>
                         <button
                           onClick={() => handleMessageAdmin(order)}
-                          className="p-2 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 hover:text-blue-300 transition border border-blue-500/20 hover:border-blue-500/30"
+                          className="p-1.5 sm:p-2 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 hover:text-blue-300 transition border border-blue-500/20 hover:border-blue-500/30"
                           title="Message Admin"
                         >
-                          <MessageSquare className="w-4 h-4" />
+                          <MessageSquare className="w-3 sm:w-4 h-3 sm:h-4" />
                         </button>
                         <button
                           onClick={() => handleReportIssue(order)}
-                          className="p-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 hover:text-amber-300 transition border border-amber-500/20 hover:border-amber-500/30"
+                          className="p-1.5 sm:p-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 hover:text-amber-300 transition border border-amber-500/20 hover:border-amber-500/30"
                           title="Report Issue"
                         >
-                          <Flag className="w-4 h-4" />
+                          <Flag className="w-3 sm:w-4 h-3 sm:h-4" />
                         </button>
                       </div>
                     </div>
@@ -1058,12 +1078,12 @@ export default function Dashboard() {
 
                   {/* Order Progress Bar */}
                   {order.status !== "Cancelled" && (
-                    <div className="mt-2 pt-2 border-t border-zinc-800/50">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] text-zinc-500 font-mono">
+                    <div className="mt-1 sm:mt-2 pt-1.5 sm:pt-2 border-t border-zinc-800/50">
+                      <div className="flex items-center gap-1.5 sm:gap-2">
+                        <span className="text-[8px] sm:text-[10px] text-zinc-500 font-mono">
                           Progress:
                         </span>
-                        <div className="flex-1 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                        <div className="flex-1 h-1 sm:h-1.5 bg-zinc-800 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full transition-all duration-500 ${
                               order.status === "Completed" ||
@@ -1077,7 +1097,7 @@ export default function Dashboard() {
                             }`}
                           />
                         </div>
-                        <span className="text-[10px] text-zinc-500 font-mono">
+                        <span className="text-[8px] sm:text-[10px] text-zinc-500 font-mono">
                           {order.status === "Completed" ||
                           order.status === "Delivered"
                             ? "Complete"
@@ -1095,13 +1115,13 @@ export default function Dashboard() {
                   {/* DELIVERY DETAILS - SHOW WHEN DELIVERED    */}
                   {/* ========================================== */}
                   {order.status === "Delivered" && order.delivery && (
-                    <div className="mt-2 pt-3 border-t border-emerald-500/20">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Truck className="w-4 h-4 text-emerald-400" />
-                        <span className="text-xs font-bold text-emerald-400">
+                    <div className="mt-1 sm:mt-2 pt-2 sm:pt-3 border-t border-emerald-500/20">
+                      <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+                        <Truck className="w-3 sm:w-4 h-3 sm:h-4 text-emerald-400" />
+                        <span className="text-[8px] sm:text-[10px] md:text-xs font-bold text-emerald-400">
                           ✓ Delivered
                         </span>
-                        <span className="text-[10px] text-zinc-500 font-mono">
+                        <span className="text-[8px] sm:text-[10px] text-zinc-500 font-mono">
                           {order.delivery.deliveredAt
                             ?.toDate?.()
                             ?.toLocaleDateString() || "N/A"}
@@ -1109,32 +1129,32 @@ export default function Dashboard() {
                       </div>
 
                       {/* Quick Delivery Info Preview */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 xs:grid-cols-2 gap-1.5 sm:gap-2">
                         {order.delivery.email && (
-                          <div className="flex items-center gap-2 p-2 bg-zinc-950/50 rounded-lg border border-zinc-800">
-                            <Key className="w-3 h-3 text-amber-400" />
-                            <span className="text-[10px] text-zinc-400 font-mono truncate">
+                          <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-zinc-950/50 rounded-lg border border-zinc-800">
+                            <Key className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-amber-400" />
+                            <span className="text-[8px] sm:text-[10px] text-zinc-400 font-mono truncate">
                               {order.delivery.email}
                             </span>
                           </div>
                         )}
                         {order.delivery.downloadLink && (
-                          <div className="flex items-center gap-2 p-2 bg-zinc-950/50 rounded-lg border border-zinc-800">
-                            <Download className="w-3 h-3 text-emerald-400" />
+                          <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-zinc-950/50 rounded-lg border border-zinc-800">
+                            <Download className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-emerald-400" />
                             <a
                               href={order.delivery.downloadLink}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-[10px] text-amber-400 hover:text-amber-300 truncate"
+                              className="text-[8px] sm:text-[10px] text-amber-400 hover:text-amber-300 truncate"
                             >
                               Download
                             </a>
                           </div>
                         )}
                         {order.delivery.licenseKey && (
-                          <div className="flex items-center gap-2 p-2 bg-zinc-950/50 rounded-lg border border-zinc-800">
-                            <Key className="w-3 h-3 text-amber-400" />
-                            <span className="text-[10px] text-amber-400 font-mono font-bold">
+                          <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 bg-zinc-950/50 rounded-lg border border-zinc-800">
+                            <Key className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-amber-400" />
+                            <span className="text-[8px] sm:text-[10px] text-amber-400 font-mono font-bold">
                               {order.delivery.licenseKey.slice(0, 8)}...
                             </span>
                           </div>
@@ -1143,9 +1163,10 @@ export default function Dashboard() {
 
                       <button
                         onClick={() => setViewingOrder(order)}
-                        className="mt-2 text-[10px] text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1"
+                        className="mt-1.5 sm:mt-2 text-[8px] sm:text-[10px] text-amber-400 hover:text-amber-300 font-bold flex items-center gap-0.5 sm:gap-1"
                       >
-                        <Eye className="w-3 h-3" /> View Full Delivery Details
+                        <Eye className="w-2.5 sm:w-3 h-2.5 sm:h-3" /> View Full
+                        Delivery Details
                       </button>
                     </div>
                   )}
@@ -1155,10 +1176,10 @@ export default function Dashboard() {
               {orders.length > 5 && (
                 <button
                   onClick={() => navigate("/orders")}
-                  className="w-full py-3 rounded-xl bg-zinc-900/50 border border-zinc-800 hover:border-amber-500/30 text-zinc-400 hover:text-amber-400 text-xs font-bold transition flex items-center justify-center gap-2"
+                  className="w-full py-2 sm:py-3 rounded-xl bg-zinc-900/50 border border-zinc-800 hover:border-amber-500/30 text-zinc-400 hover:text-amber-400 text-[10px] sm:text-xs font-bold transition flex items-center justify-center gap-1.5 sm:gap-2"
                 >
                   <span>View All Orders ({orders.length})</span>
-                  <ArrowRight className="w-3 h-3" />
+                  <ArrowRight className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
                 </button>
               )}
             </div>
@@ -1168,31 +1189,35 @@ export default function Dashboard() {
         {/* ========================================== */}
         {/* MEMBERSHIP / REWARDS SECTION              */}
         {/* ========================================== */}
-        <div className="bg-gradient-to-br from-amber-500/10 via-yellow-500/5 to-transparent border border-amber-500/30 rounded-3xl p-6 md:p-8 backdrop-blur-sm shadow-xl shadow-amber-500/10">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-2xl bg-amber-500/20 border border-amber-500/30">
-                <Gift className="w-6 h-6 text-amber-400" />
+        <div className="bg-gradient-to-br from-amber-500/10 via-yellow-500/5 to-transparent border border-amber-500/30 rounded-2xl sm:rounded-3xl p-4 sm:p-5 md:p-6 lg:p-8 backdrop-blur-sm shadow-xl shadow-amber-500/10">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex items-start gap-3 sm:gap-4">
+              <div className="p-2 sm:p-3 rounded-2xl bg-amber-500/20 border border-amber-500/30">
+                <Gift className="w-5 sm:w-6 h-5 sm:h-6 text-amber-400" />
               </div>
               <div>
-                <h3 className="text-lg font-black text-white">
+                <h3 className="text-sm sm:text-base md:text-lg font-black text-white">
                   Premium Rewards
                 </h3>
-                <p className="text-sm text-zinc-400 max-w-md">
+                <p className="text-[10px] sm:text-xs md:text-sm text-zinc-400 max-w-md">
                   Earn loyalty points on every purchase and unlock exclusive
                   discounts.
                 </p>
-                <div className="flex items-center gap-4 mt-2">
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs text-zinc-500">Points:</span>
-                    <span className="text-sm font-black text-amber-400">
+                <div className="flex items-center gap-2 sm:gap-4 mt-1 sm:mt-2">
+                  <div className="flex items-center gap-0.5 sm:gap-1">
+                    <span className="text-[8px] sm:text-[10px] md:text-xs text-zinc-500">
+                      Points:
+                    </span>
+                    <span className="text-xs sm:text-sm md:text-base font-black text-amber-400">
                       1,250
                     </span>
                   </div>
-                  <div className="w-px h-4 bg-zinc-800" />
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs text-zinc-500">Tier:</span>
-                    <span className="text-xs font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                  <div className="w-px h-3 sm:h-4 bg-zinc-800" />
+                  <div className="flex items-center gap-0.5 sm:gap-1">
+                    <span className="text-[8px] sm:text-[10px] md:text-xs text-zinc-500">
+                      Tier:
+                    </span>
+                    <span className="text-[8px] sm:text-[10px] md:text-xs font-bold text-amber-400 bg-amber-500/10 px-1.5 sm:px-2 py-0.5 rounded border border-amber-500/20">
                       Gold
                     </span>
                   </div>
@@ -1201,10 +1226,10 @@ export default function Dashboard() {
             </div>
             <button
               onClick={() => navigate("/rewards")}
-              className="w-full md:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-black font-black text-xs transition shadow-lg shadow-amber-400/20 flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-black font-black text-[10px] sm:text-xs transition shadow-lg shadow-amber-400/20 flex items-center justify-center gap-1.5 sm:gap-2"
             >
               <span>View Rewards</span>
-              <ArrowRight className="w-3 h-3" />
+              <ArrowRight className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
             </button>
           </div>
         </div>
@@ -1214,57 +1239,59 @@ export default function Dashboard() {
       {/* ORDER DETAIL MODAL                        */}
       {/* ========================================== */}
       {viewingOrder && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-zinc-950/95 border border-amber-500/30 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl shadow-amber-500/10">
-            <div className="flex justify-between items-start mb-6">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-zinc-950/95 border border-amber-500/30 rounded-2xl sm:rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6 md:p-8 shadow-2xl shadow-amber-500/10">
+            <div className="flex justify-between items-start mb-4 sm:mb-6">
               <div>
-                <h2 className="text-xl font-black text-white">Order Details</h2>
-                <p className="text-xs text-zinc-400 font-mono">
+                <h2 className="text-base sm:text-lg md:text-xl font-black text-white">
+                  Order Details
+                </h2>
+                <p className="text-[10px] sm:text-xs text-zinc-400 font-mono">
                   Order #{viewingOrder.id?.slice(0, 8)}
                 </p>
               </div>
               <button
                 onClick={() => setViewingOrder(null)}
-                className="p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white transition"
+                className="p-1.5 sm:p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white transition"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 sm:w-5 h-4 sm:h-5" />
               </button>
             </div>
 
             {/* Order Info */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="p-4 bg-zinc-900/50 rounded-xl border border-zinc-800">
-                <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">
+            <div className="grid grid-cols-2 gap-2 sm:gap-4 mb-4 sm:mb-6">
+              <div className="p-2 sm:p-4 bg-zinc-900/50 rounded-xl border border-zinc-800">
+                <p className="text-[8px] sm:text-[10px] font-mono text-zinc-500 uppercase tracking-wider">
                   Status
                 </p>
-                <div className="mt-1">
+                <div className="mt-0.5 sm:mt-1">
                   {renderStatusBadge(viewingOrder.status)}
                 </div>
               </div>
-              <div className="p-4 bg-zinc-900/50 rounded-xl border border-zinc-800">
-                <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">
+              <div className="p-2 sm:p-4 bg-zinc-900/50 rounded-xl border border-zinc-800">
+                <p className="text-[8px] sm:text-[10px] font-mono text-zinc-500 uppercase tracking-wider">
                   Payment
                 </p>
-                <div className="mt-1">
+                <div className="mt-0.5 sm:mt-1">
                   {renderPaymentBadge(viewingOrder.paymentStatus)}
                 </div>
               </div>
-              <div className="p-4 bg-zinc-900/50 rounded-xl border border-zinc-800">
-                <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">
+              <div className="p-2 sm:p-4 bg-zinc-900/50 rounded-xl border border-zinc-800">
+                <p className="text-[8px] sm:text-[10px] font-mono text-zinc-500 uppercase tracking-wider">
                   Total
                 </p>
-                <p className="text-lg font-black text-amber-400 mt-1">
+                <p className="text-sm sm:text-base md:text-lg font-black text-amber-400 mt-0.5 sm:mt-1">
                   ₦
                   {Number(
                     viewingOrder.total || viewingOrder.amountPaid || 0,
                   ).toLocaleString()}
                 </p>
               </div>
-              <div className="p-4 bg-zinc-900/50 rounded-xl border border-zinc-800">
-                <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">
+              <div className="p-2 sm:p-4 bg-zinc-900/50 rounded-xl border border-zinc-800">
+                <p className="text-[8px] sm:text-[10px] font-mono text-zinc-500 uppercase tracking-wider">
                   Date
                 </p>
-                <p className="text-xs font-mono text-white mt-1">
+                <p className="text-[10px] sm:text-xs font-mono text-white mt-0.5 sm:mt-1">
                   {formatDate(viewingOrder.createdAt)}
                 </p>
               </div>
@@ -1272,23 +1299,25 @@ export default function Dashboard() {
 
             {/* Items */}
             {viewingOrder.items && viewingOrder.items.length > 0 && (
-              <div className="mb-6">
-                <h4 className="text-sm font-bold text-white mb-3">Items</h4>
-                <div className="space-y-2">
+              <div className="mb-4 sm:mb-6">
+                <h4 className="text-xs sm:text-sm font-bold text-white mb-2 sm:mb-3">
+                  Items
+                </h4>
+                <div className="space-y-1.5 sm:space-y-2">
                   {viewingOrder.items.map((item, idx) => (
                     <div
                       key={idx}
-                      className="flex justify-between items-center p-3 bg-zinc-900/50 rounded-xl border border-zinc-800"
+                      className="flex justify-between items-center p-2 sm:p-3 bg-zinc-900/50 rounded-xl border border-zinc-800"
                     >
                       <div>
-                        <p className="text-sm font-medium text-white">
+                        <p className="text-[10px] sm:text-xs md:text-sm font-medium text-white">
                           {item.title || item.name}
                         </p>
-                        <p className="text-xs text-zinc-400">
+                        <p className="text-[8px] sm:text-[10px] text-zinc-400">
                           Qty: {item.quantity || 1}
                         </p>
                       </div>
-                      <p className="text-sm font-bold text-amber-400">
+                      <p className="text-[10px] sm:text-xs md:text-sm font-bold text-amber-400">
                         ₦
                         {Number(
                           (item.price || 0) * (item.quantity || 1),
@@ -1304,7 +1333,7 @@ export default function Dashboard() {
             {/* DELIVERY DETAILS IN MODAL                 */}
             {/* ========================================== */}
             {viewingOrder.status === "Delivered" && viewingOrder.delivery && (
-              <div className="mb-6">
+              <div className="mb-4 sm:mb-6">
                 <DeliveryDetails
                   delivery={viewingOrder.delivery}
                   order={viewingOrder}
@@ -1313,30 +1342,31 @@ export default function Dashboard() {
             )}
 
             {/* Actions */}
-            <div className="flex flex-wrap gap-3 pt-4 border-t border-zinc-800/50">
+            <div className="flex flex-wrap gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-zinc-800/50">
               <button
                 onClick={() => generatePDF(viewingOrder)}
-                className="flex-1 min-w-[120px] px-4 py-3 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-black font-black rounded-xl text-xs transition flex items-center justify-center gap-2"
+                className="flex-1 min-w-[100px] sm:min-w-[120px] px-3 sm:px-4 py-2 sm:py-3 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-black font-black rounded-xl text-[10px] sm:text-xs transition flex items-center justify-center gap-1.5 sm:gap-2"
               >
-                <Printer className="w-4 h-4" /> Download Invoice
+                <Printer className="w-3 sm:w-4 h-3 sm:h-4" /> Download Invoice
               </button>
               <button
                 onClick={() => {
                   setViewingOrder(null);
                   handleMessageAdmin(viewingOrder);
                 }}
-                className="flex-1 min-w-[120px] px-4 py-3 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 font-bold rounded-xl text-xs transition flex items-center justify-center gap-2 border border-blue-500/20"
+                className="flex-1 min-w-[100px] sm:min-w-[120px] px-3 sm:px-4 py-2 sm:py-3 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 font-bold rounded-xl text-[10px] sm:text-xs transition flex items-center justify-center gap-1.5 sm:gap-2 border border-blue-500/20"
               >
-                <MessageSquare className="w-4 h-4" /> Message Admin
+                <MessageSquare className="w-3 sm:w-4 h-3 sm:h-4" /> Message
+                Admin
               </button>
               <button
                 onClick={() => {
                   setViewingOrder(null);
                   handleReportIssue(viewingOrder);
                 }}
-                className="flex-1 min-w-[120px] px-4 py-3 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 font-bold rounded-xl text-xs transition flex items-center justify-center gap-2 border border-amber-500/20"
+                className="flex-1 min-w-[100px] sm:min-w-[120px] px-3 sm:px-4 py-2 sm:py-3 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 font-bold rounded-xl text-[10px] sm:text-xs transition flex items-center justify-center gap-1.5 sm:gap-2 border border-amber-500/20"
               >
-                <Flag className="w-4 h-4" /> Report Issue
+                <Flag className="w-3 sm:w-4 h-3 sm:h-4" /> Report Issue
               </button>
             </div>
           </div>
@@ -1347,35 +1377,35 @@ export default function Dashboard() {
       {/* REPORT ISSUE MODAL                        */}
       {/* ========================================== */}
       {showReportModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-zinc-950/95 border border-amber-500/30 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl shadow-amber-500/10">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-zinc-950/95 border border-amber-500/30 rounded-2xl sm:rounded-3xl max-w-md w-full p-4 sm:p-6 md:p-8 shadow-2xl shadow-amber-500/10">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h2 className="text-xl font-black text-white flex items-center gap-2">
-                  <Flag className="w-5 h-5 text-amber-400" />
+                <h2 className="text-base sm:text-lg md:text-xl font-black text-white flex items-center gap-2">
+                  <Flag className="w-4 sm:w-5 h-4 sm:h-5 text-amber-400" />
                   Report Issue
                 </h2>
-                <p className="text-xs text-zinc-400 font-mono">
+                <p className="text-[10px] sm:text-xs text-zinc-400 font-mono">
                   Order #{reportOrder?.id?.slice(0, 8)}
                 </p>
               </div>
               <button
                 onClick={() => setShowReportModal(false)}
-                className="p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white transition"
+                className="p-1.5 sm:p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white transition"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 sm:w-5 h-4 sm:h-5" />
               </button>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div>
-                <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">
+                <label className="block text-[8px] sm:text-[10px] md:text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">
                   Issue Type
                 </label>
                 <select
                   value={reportType}
                   onChange={(e) => setReportType(e.target.value)}
-                  className="w-full bg-zinc-900/80 border border-zinc-800 focus:border-amber-500/50 rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition"
+                  className="w-full bg-zinc-900/80 border border-zinc-800 focus:border-amber-500/50 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-[10px] sm:text-xs md:text-sm text-white focus:outline-none transition"
                 >
                   <option value="general">General Issue</option>
                   <option value="delivery">Delivery Problem</option>
@@ -1386,7 +1416,7 @@ export default function Dashboard() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">
+                <label className="block text-[8px] sm:text-[10px] md:text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">
                   Describe the Issue
                 </label>
                 <textarea
@@ -1394,30 +1424,30 @@ export default function Dashboard() {
                   value={reportMessage}
                   onChange={(e) => setReportMessage(e.target.value)}
                   placeholder="Please provide details about the issue..."
-                  className="w-full bg-zinc-900/80 border border-zinc-800 focus:border-amber-500/50 rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition resize-none"
+                  className="w-full bg-zinc-900/80 border border-zinc-800 focus:border-amber-500/50 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-[10px] sm:text-xs md:text-sm text-white focus:outline-none transition resize-none"
                 />
               </div>
 
-              <div className="flex gap-3 pt-2">
+              <div className="flex gap-2 sm:gap-3 pt-2">
                 <button
                   onClick={() => setShowReportModal(false)}
-                  className="flex-1 px-4 py-3 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold rounded-xl text-xs transition"
+                  className="flex-1 px-3 sm:px-4 py-2 sm:py-3 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold rounded-xl text-[10px] sm:text-xs transition"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={submitReport}
                   disabled={submittingReport}
-                  className="flex-1 px-4 py-3 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-black font-black rounded-xl text-xs transition flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="flex-1 px-3 sm:px-4 py-2 sm:py-3 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-black font-black rounded-xl text-[10px] sm:text-xs transition flex items-center justify-center gap-1.5 sm:gap-2 disabled:opacity-50"
                 >
                   {submittingReport ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                      <div className="w-3 sm:w-4 h-3 sm:h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
                       Submitting...
                     </>
                   ) : (
                     <>
-                      <Send className="w-4 h-4" /> Submit Report
+                      <Send className="w-3 sm:w-4 h-3 sm:h-4" /> Submit Report
                     </>
                   )}
                 </button>
@@ -1431,29 +1461,29 @@ export default function Dashboard() {
       {/* MESSAGE ADMIN MODAL                       */}
       {/* ========================================== */}
       {showMessageModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-zinc-950/95 border border-blue-500/30 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl shadow-blue-500/10">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-zinc-950/95 border border-blue-500/30 rounded-2xl sm:rounded-3xl max-w-md w-full p-4 sm:p-6 md:p-8 shadow-2xl shadow-blue-500/10">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h2 className="text-xl font-black text-white flex items-center gap-2">
-                  <MessageSquare className="w-5 h-5 text-blue-400" />
+                <h2 className="text-base sm:text-lg md:text-xl font-black text-white flex items-center gap-2">
+                  <MessageSquare className="w-4 sm:w-5 h-4 sm:h-5 text-blue-400" />
                   Message Admin
                 </h2>
-                <p className="text-xs text-zinc-400 font-mono">
+                <p className="text-[10px] sm:text-xs text-zinc-400 font-mono">
                   Order #{messageOrder?.id?.slice(0, 8)}
                 </p>
               </div>
               <button
                 onClick={() => setShowMessageModal(false)}
-                className="p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white transition"
+                className="p-1.5 sm:p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white transition"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 sm:w-5 h-4 sm:h-5" />
               </button>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div>
-                <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">
+                <label className="block text-[8px] sm:text-[10px] md:text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">
                   Your Message
                 </label>
                 <textarea
@@ -1461,30 +1491,30 @@ export default function Dashboard() {
                   value={adminMessage}
                   onChange={(e) => setAdminMessage(e.target.value)}
                   placeholder="Write your message to admin..."
-                  className="w-full bg-zinc-900/80 border border-zinc-800 focus:border-blue-500/50 rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition resize-none"
+                  className="w-full bg-zinc-900/80 border border-zinc-800 focus:border-blue-500/50 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-[10px] sm:text-xs md:text-sm text-white focus:outline-none transition resize-none"
                 />
               </div>
 
-              <div className="flex gap-3 pt-2">
+              <div className="flex gap-2 sm:gap-3 pt-2">
                 <button
                   onClick={() => setShowMessageModal(false)}
-                  className="flex-1 px-4 py-3 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold rounded-xl text-xs transition"
+                  className="flex-1 px-3 sm:px-4 py-2 sm:py-3 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold rounded-xl text-[10px] sm:text-xs transition"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={submitMessage}
                   disabled={submittingMessage}
-                  className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-400 hover:to-cyan-300 text-white font-black rounded-xl text-xs transition flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="flex-1 px-3 sm:px-4 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-400 hover:to-cyan-300 text-white font-black rounded-xl text-[10px] sm:text-xs transition flex items-center justify-center gap-1.5 sm:gap-2 disabled:opacity-50"
                 >
                   {submittingMessage ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <div className="w-3 sm:w-4 h-3 sm:h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                       Sending...
                     </>
                   ) : (
                     <>
-                      <Send className="w-4 h-4" /> Send Message
+                      <Send className="w-3 sm:w-4 h-3 sm:h-4" /> Send Message
                     </>
                   )}
                 </button>

@@ -362,8 +362,6 @@ const AnimatedWorldMap = () => {
 
   return (
     <div className="relative w-full h-[400px] bg-zinc-950/50 rounded-3xl border border-zinc-800 overflow-hidden">
-      {/* Grid Background */}
-
       {/* Glow behind map */}
       <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-yellow-500/5" />
 
@@ -1115,13 +1113,19 @@ export default function Home() {
                 </>
               )}
               {user && (
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center text-black font-bold text-xs">
+                <button
+                  onClick={() => navigate("/dashboard")}
+                  className="flex items-center gap-2 cursor-pointer group hover:opacity-80 transition"
+                >
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center text-black font-bold text-xs shadow-lg shadow-amber-400/20 group-hover:scale-110 transition-transform">
                     {userData?.fullName?.[0]?.toUpperCase() ||
                       user?.email?.[0]?.toUpperCase() ||
                       "U"}
                   </div>
-                </div>
+                  <span className="text-xs text-zinc-300 hidden xl:block group-hover:text-amber-400 transition">
+                    {userData?.fullName || user?.email?.split("@")[0]}
+                  </span>
+                </button>
               )}
               <Link to="/cart">
                 <button className="relative p-2 rounded-xl bg-zinc-900 border border-amber-500/30 text-amber-400 hover:bg-amber-500/10 transition">
@@ -1166,6 +1170,18 @@ export default function Home() {
                 <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </Link>
+            {user && (
+              <button
+                onClick={() => navigate("/dashboard")}
+                className="flex items-center gap-1.5 cursor-pointer group"
+              >
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center text-black font-bold text-xs shadow-lg shadow-amber-400/20">
+                  {userData?.fullName?.[0]?.toUpperCase() ||
+                    user?.email?.[0]?.toUpperCase() ||
+                    "U"}
+                </div>
+              </button>
+            )}
             {!loading && isAdmin && (
               <Link to="/admin">
                 <button className="p-2 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 text-black hover:from-amber-300 hover:to-yellow-300 transition shadow-lg shadow-amber-400/20">
@@ -1232,21 +1248,27 @@ export default function Home() {
                   </>
                 )}
                 {user && (
-                  <div className="flex items-center gap-3 py-3 border-b border-zinc-800/50">
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      navigate("/dashboard");
+                    }}
+                    className="w-full text-left flex items-center gap-3 py-3 border-b border-zinc-800/50 hover:text-amber-400 transition"
+                  >
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center text-black font-bold text-sm">
                       {userData?.fullName?.[0]?.toUpperCase() ||
                         user?.email?.[0]?.toUpperCase() ||
                         "U"}
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-white">
+                      <p className="text-sm font-bold text-white group-hover:text-amber-400 transition">
                         {userData?.fullName || user?.email?.split("@")[0]}
                       </p>
                       <p className="text-[10px] text-zinc-400 font-mono">
                         {user?.email}
                       </p>
                     </div>
-                  </div>
+                  </button>
                 )}
                 {!loading && isAdmin && (
                   <Link to="/admin">

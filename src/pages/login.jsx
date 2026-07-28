@@ -43,7 +43,7 @@ export default function Login() {
       await login(email, password);
       setSuccess(true);
       setTimeout(() => {
-        navigate("/");
+        navigate("/dashboard");
       }, 1500);
     } catch (err) {
       setError(
