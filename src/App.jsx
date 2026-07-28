@@ -35,7 +35,6 @@ export default function App() {
             }
           />
 
-          <Route path="/downloads" element={<Downloads />} />
           <Route path="/reset-password" element={<ForgotPassword/>}/>
           <Route path="/shop" element={<Shop />} />
           <Route path="/cart" element={<Cart />} />

@@ -1369,7 +1369,7 @@ export default function Home() {
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-gradient-to-b from-amber-500/20 via-yellow-500/10 to-transparent blur-[120px] rounded-full" />
           </motion.div>
 
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full relative z-10">
+          <div className="max-w-7xl mx-auto px-7 sm:px-6 w-full relative z-10">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               {/* Hero Content */}
               <motion.div
